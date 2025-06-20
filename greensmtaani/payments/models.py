@@ -1,18 +1,21 @@
 from django.db import models
 from decimal import Decimal
 
+from orders.models import Orders
+from users.models import Customer
+
 
 class Transaction(models.Model):
     transaction_id = models.AutoField(primary_key=True)
     order = models.ForeignKey(
-        'Order',
+        Orders,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='transactions'
     )
     customer = models.ForeignKey(
-        'Customer',
+        Customer,
         on_delete=models.RESTRICT,
         related_name='transactions'
     )

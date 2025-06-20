@@ -30,7 +30,7 @@ class Product(models.Model):
 
 class StockRecord(models.Model):
     inventory_id = models.AutoField(primary_key=True)
-    mama_mboga = models.ForeignKey('users.MamaMboga', on_delete=models.CASCADE)
+    mama_mboga = models.ForeignKey(MamaMboga, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
     current_stock_quantity = models.DecimalField(max_digits=10, decimal_places=2)
