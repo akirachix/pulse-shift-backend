@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nutrition',
+    'users'
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -79,11 +81,11 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres.rjxovafjhiyqvcqypafr',
         'PASSWORD': 'lionfishdb624',
-        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',
-        'PORT': '5432',
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',  
+        'PORT': '5432',   
         'OPTIONS': {
             'options': '-c search_path=greens_mtaani,public'
-        }
+        }    
     }
 }
 
