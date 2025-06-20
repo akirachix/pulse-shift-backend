@@ -38,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'products',
+
+    'orders',
+    'nutrition',
+    'users'
+    'payments',
+
 ]
 
 MIDDLEWARE = [
@@ -84,6 +90,7 @@ DATABASES = {
         'OPTIONS': {
             'options': '-c search_path=greens_mtaani,public'
         }
+
     }
 }
 
