@@ -37,10 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'products',
+
     'orders',
     'nutrition',
     'users'
     'payments',
+
 ]
 
 MIDDLEWARE = [
@@ -82,14 +85,14 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres.rjxovafjhiyqvcqypafr',
         'PASSWORD': 'lionfishdb624',
-        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',  
-        'PORT': '5432',   
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',
+        'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=greens_mtaani,public'
-        }    
+        }
+
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
