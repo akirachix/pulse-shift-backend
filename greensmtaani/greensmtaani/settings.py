@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'nutrition',
     'users',
     'payments',
+    'api',
+    'rest_framework'
 
 ]
 
