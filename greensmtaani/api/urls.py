@@ -4,8 +4,8 @@ from .views import CustomerViewSet, AddressViewSet, MamaMbogaViewSet
 
 router = DefaultRouter()
 router.register(r"customers", CustomerViewSet, basename='customers')
-router.register(r"mama-mbogas", CustomerViewSet, basename='mama-mbogas')
-router.register(r"addresses", CustomerViewSet, basename='addresses')
+router.register(r"mama-mbogas", MamaMbogaViewSet, basename='mama-mbogas')
+router.register(r"addresses", AddressViewSet, basename='addresses')
 
 
 urlpatterns = [
