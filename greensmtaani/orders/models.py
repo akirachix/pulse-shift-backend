@@ -6,9 +6,9 @@ from users.models import Address, Customer, MamaMboga
 # Create your models here.
 class Orders(models.Model):
     order_id=models.AutoField(primary_key=True)
-    customer = models.ForeignKey(Customer, on_delete=models.RESTRICT)
+    customer = models.ForeignKey(Customer, on_delete=models.RESTRICT) 
     order_date = models.DateTimeField(auto_now_add=True)
-    pickup_address = models.ForeignKey(Address, on_delete=models.RESTRICT, null=True, blank=True)
+    # customer_address = models.ForeignKey(Address, on_delete=models.RESTRICT, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     order_preference_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     current_status = models.CharField(max_length=50)
