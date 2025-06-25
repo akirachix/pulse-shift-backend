@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from nutrition.models import DietaryPreference,MealPlan
 # users APIs
 class DietaryPreferenceSerializer(serializers.ModelSerializer):
@@ -9,7 +10,29 @@ class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealPlan
         fields = '__all__'        
+from orders.models import Orders, Order_items
+from payments.models import Transaction
 from products.models import Product, ProductCategory, StockRecord 
+
+
+class OrdersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orders
+        fields = '__all__'
+        
+class Order_itemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order_items
+
+class OrdersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orders
+        fields = '__all__'
+        
+class Order_itemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order_items
+
 
 # users APIs       
 class ProductSerializer(serializers.ModelSerializer):
@@ -24,6 +47,13 @@ class StockRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockRecord
         fields = '__all__'
+# users APIs
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = '__all__'
+
+
 
 
 

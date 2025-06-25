@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 class Customer(models.Model):
@@ -22,7 +23,7 @@ class MamaMboga(models.Model):
     owner_last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True)
-    password_hash = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
     location_latitude = models.FloatField(null=True, blank=True)
     location_longitude = models.FloatField(null=True, blank=True)
     address_description = models.TextField(null=True, blank=True)
@@ -40,4 +41,4 @@ class Address(models.Model):
     longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.street_address}, {self.city}"
+        return f"Address {self.address_id} for {self.customer} ({self.latitude}, {self.longitude})"
