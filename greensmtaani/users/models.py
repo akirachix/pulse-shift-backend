@@ -22,7 +22,7 @@ class MamaMboga(models.Model):
     owner_last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True)
-    password_hash = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
     location_latitude = models.FloatField(null=True, blank=True)
     location_longitude = models.FloatField(null=True, blank=True)
     address_description = models.TextField(null=True, blank=True)
