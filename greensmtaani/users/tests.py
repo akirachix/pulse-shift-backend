@@ -58,8 +58,8 @@ class MamaMbogaModelTest(TestCase):
     def setUp(self):
         self.mama = MamaMboga.objects.create(
             kiosk_name="Test Kiosk",
-            owner_first_name="Mama",
-            owner_last_name="Mboga",
+            first_name="Mama",
+            last_name="Mboga",
             email="mama@example.com",
             phone_number="0722222222",
             password="hash"
@@ -67,8 +67,8 @@ class MamaMbogaModelTest(TestCase):
 
     def test_mama_creation(self):
         self.assertEqual(self.mama.kiosk_name, "Test Kiosk")
-        self.assertEqual(self.mama.owner_first_name, "Mama")
-        self.assertEqual(self.mama.owner_last_name, "Mboga")
+        self.assertEqual(self.mama.first_name, "Mama")
+        self.assertEqual(self.mama.last_name, "Mboga")
         self.assertTrue(self.mama.is_active)
         self.assertIsNotNone(self.mama.registration_date)
 
@@ -79,8 +79,8 @@ class MamaMbogaModelTest(TestCase):
         with self.assertRaises(IntegrityError):
             MamaMboga.objects.create(
                 kiosk_name="Kiosk 2",
-                owner_first_name="Other",
-                owner_last_name="Owner",
+                first_name="Other",
+                last_name="Owner",
                 email="mama@example.com",  
                 phone_number="0722222223",
                 password="hash"
@@ -90,8 +90,8 @@ class MamaMbogaModelTest(TestCase):
         with self.assertRaises(IntegrityError):
             MamaMboga.objects.create(
                 kiosk_name="Kiosk 3",
-                owner_first_name="Other",
-                owner_last_name="Owner",
+                first_name="Other",
+                last_name="Owner",
                 email="other@example.com",
                 phone_number="0722222222",  
                 password="hash"
@@ -100,8 +100,8 @@ class MamaMbogaModelTest(TestCase):
     def test_nullable_fields(self):
         mama = MamaMboga.objects.create(
             kiosk_name="Null Kiosk",
-            owner_first_name="Null",
-            owner_last_name="Owner",
+            first_name="Null",
+            last_name="Owner",
             email=None,
             phone_number="0722222224",
             password="hash"
