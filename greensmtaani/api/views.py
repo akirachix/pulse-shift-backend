@@ -2,7 +2,10 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from users.models import Customer, MamaMboga, Address
 from orders.models import Orders, Order_items
-from .serializer import CustomerSerializer, MamaMbogaSerializer, AddressSerializer, Order_itemsSerializer, OrdersSerializer
+from payments.models import Transaction
+from .serializer import CustomerSerializer, MamaMbogaSerializer, AddressSerializer, Order_itemsSerializer, OrdersSerializer, TransactionSerializer
+
+
 
 # Create your views here.
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -25,5 +28,8 @@ class Order_itemsViewSet(viewsets.ModelViewSet):
     queryset = Order_items.objects.all()
     serializer_class =Order_itemsSerializer
 
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset= Transaction.objects.all()
+    serializer_class = TransactionSerializer
 
     
