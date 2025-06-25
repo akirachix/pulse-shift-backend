@@ -1,10 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import TransactionViewSet
+
 from .views import (
     TransactionViewSet
 
 )
 router = DefaultRouter()
+
+router.register(r"transaction",TransactionViewSet, basename='transaction')
+
 router.register(r"transaction",TransactionViewSet, basename='transaction')
 
 urlpatterns = [
