@@ -38,10 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'products',
-    'orders',
-    'nutrition',
-    'users',
-    'payments',
     'api',
     'rest_framework',
 
@@ -90,11 +86,11 @@ DATABASES = {
         'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=greens_mtaani,public'
-        }
-
+        },
+        'CONNECT_TIMEOUT': 60,
+        'CONN_MAX_AGE': 0,    
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

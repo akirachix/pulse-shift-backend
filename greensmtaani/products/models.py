@@ -18,7 +18,7 @@ class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    # category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
     base_unit = models.CharField(max_length=50)
     image_url = models.URLField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
