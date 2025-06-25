@@ -26,7 +26,6 @@ class UserUnionList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        # You probably want to check 'user_type' and save to the correct model
         data = request.data
         user_type = data.get('user_type')
         if user_type == 'customer':
