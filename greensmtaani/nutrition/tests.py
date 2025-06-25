@@ -1,4 +1,6 @@
 
+
+from django.test import TestCase
 from django.test import TestCase
 from django.utils import timezone
 from users.models import Customer
@@ -97,4 +99,5 @@ class MealPlanModelTest(TestCase):
         self.assertEqual(plan.version, 1)
 
    
+
 
