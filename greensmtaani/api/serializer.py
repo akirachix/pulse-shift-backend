@@ -1,10 +1,28 @@
 from rest_framework import serializers
-# from users.models import Customer, MamaMboga, Address
-# from orders.models import Orders, Order_items
-# from nutrition.models import DietaryPreference,MealPlan
-# from products.models import Product, ProductCategory, StockRecord 
+
+from orders.models import Orders, Order_items
 from payments.models import Transaction
 from products.models import Product, ProductCategory, StockRecord 
+
+
+class OrdersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orders
+        fields = '__all__'
+        
+class Order_itemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order_items
+
+class OrdersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orders
+        fields = '__all__'
+        
+class Order_itemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order_items
+
 
 # users APIs       
 class ProductSerializer(serializers.ModelSerializer):
