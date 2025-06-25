@@ -40,4 +40,4 @@ class Address(models.Model):
     longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.street_address}, {self.city}"
+       return f"Address {self.address_id} for {self.customer} ({self.latitude}, {self.longitude})"
