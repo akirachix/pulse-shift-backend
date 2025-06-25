@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from orders.models import Orders, Order_items
-from .serializer import  Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer
+from payment.models import Transaction
+from .serializer import  Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
 from products.models import Product, ProductCategory, StockRecord
 
 
@@ -25,5 +26,9 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
 class StockRecordViewSet(viewsets.ModelViewSet):
     queryset = StockRecord.objects.all()
     serializer_class =StockRecordSerializer
+class TransactionViewSet(viewsets.ModelViewSet):
+      queryset = Transaction.objects.all()
+    serializer_class =TransactionSerializer
+
 
 
