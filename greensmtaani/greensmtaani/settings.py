@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'users',
     'payments',
     'api',
-    'rest_framework'
+    'rest_framework',
 
 ]
 
@@ -93,6 +93,7 @@ DATABASES = {
         }
 
     }
+    
 }
 
 # Password validation
