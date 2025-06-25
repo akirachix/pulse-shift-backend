@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import Customer, MamaMboga, Address
 from orders.models import Orders, Order_items
+from nutrition.models import DietaryPreference,MealPlan
 
 # users APIs
 class CustomerSerializer(serializers.ModelSerializer):
@@ -27,6 +28,16 @@ class Order_itemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order_items
         fields = '__all__'
+
+class DietaryPreferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DietaryPreference
+        fields = '__all__'
+class MealPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MealPlan
+        fields = '__all__'        
+
 
 
 

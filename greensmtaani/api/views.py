@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from users.models import Customer, MamaMboga, Address
 from orders.models import Orders, Order_items
-from .serializer import CustomerSerializer, MamaMbogaSerializer, AddressSerializer, Order_itemsSerializer, OrdersSerializer
+from nutrition.models import DietaryPreference,MealPlan
+from .serializer import CustomerSerializer, MamaMbogaSerializer, AddressSerializer, Order_itemsSerializer, OrdersSerializer,DietaryPreferenceSerializer,MealPlanSerializer
 
 # Create your views here.
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -24,6 +25,15 @@ class OrdersViewSet(viewsets.ModelViewSet):
 class Order_itemsViewSet(viewsets.ModelViewSet):
     queryset = Order_items.objects.all()
     serializer_class =Order_itemsSerializer
+
+class DietaryPreferenceViewSet(viewsets.ModelViewSet):
+    queryset = DietaryPreference.objects.all()
+    serializer_class = DietaryPreferenceSerializer
+
+class MealPlanViewSet(viewsets.ModelViewSet):
+    queryset = MealPlan.objects.all()
+    serializer_class = MealPlanSerializer
+
 
 
     
