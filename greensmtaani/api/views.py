@@ -4,6 +4,13 @@ from rest_framework.response import Response
 from users.models import Customer, MamaMboga
 from django.db.models import Value as V, CharField, F
 from .serializer import UserUnionSerializer, CustomerSerializer, MamaMbogaSerializer
+from django.shortcuts import render
+from rest_framework import viewsets
+from orders.models import Orders, Order_items
+from payments.models import Transaction
+from .serializer import  Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
+from products.models import Product, ProductCategory, StockRecord
+
 
 class UserUnionList(APIView):
     def get(self, request):
@@ -81,3 +88,31 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Invalid user_type'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Create your views here.
+class OrdersViewSet(viewsets.ModelViewSet):
+    queryset = Orders.objects.all()
+    serializer_class = OrdersSerializer
+
+class Order_itemsViewSet(viewsets.ModelViewSet):
+    queryset = Order_items.objects.all()
+    serializer_class =Order_itemsSerializer
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class =ProductSerializer
+
+class ProductCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ProductCategory.objects.all()
+    serializer_class =ProductCategorySerializer
+
+class StockRecordViewSet(viewsets.ModelViewSet):
+    queryset = StockRecord.objects.all()
+    serializer_class =StockRecordSerializer
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class =TransactionSerializer
+
+
+
