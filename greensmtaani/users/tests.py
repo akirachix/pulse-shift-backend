@@ -10,7 +10,7 @@ class CustomerModelTest(TestCase):
             last_name="Doe",
             email="john.doe@example.com",
             phone_number="0712345678",
-            password_hash="hash"
+            password="hash"
         )
 
     def test_customer_creation(self):
@@ -30,7 +30,7 @@ class CustomerModelTest(TestCase):
                 last_name="Smith",
                 email="john.doe@example.com",  
                 phone_number="0712345679",
-                password_hash="hash"
+                password="hash"
             )
 
     def test_phone_unique(self):
@@ -40,7 +40,7 @@ class CustomerModelTest(TestCase):
                 last_name="Smith",
                 email="jane.smith@example.com",
                 phone_number="0712345678",  
-                password_hash="hash"
+                password="hash"
             )
 
     def test_max_length_fields(self):
@@ -49,7 +49,7 @@ class CustomerModelTest(TestCase):
             last_name="B" * 256,
             email="long.email@example.com",
             phone_number="1" * 21,
-            password_hash="p" * 256
+            password="p" * 256
         )
         with self.assertRaises(ValidationError):
             customer.full_clean()
@@ -62,7 +62,7 @@ class MamaMbogaModelTest(TestCase):
             owner_last_name="Mboga",
             email="mama@example.com",
             phone_number="0722222222",
-            password_hash="hash"
+            password="hash"
         )
 
     def test_mama_creation(self):
@@ -83,7 +83,7 @@ class MamaMbogaModelTest(TestCase):
                 owner_last_name="Owner",
                 email="mama@example.com",  
                 phone_number="0722222223",
-                password_hash="hash"
+                password="hash"
             )
 
     def test_phone_unique(self):
@@ -94,7 +94,7 @@ class MamaMbogaModelTest(TestCase):
                 owner_last_name="Owner",
                 email="other@example.com",
                 phone_number="0722222222",  
-                password_hash="hash"
+                password="hash"
             )
 
     def test_nullable_fields(self):
@@ -104,7 +104,7 @@ class MamaMbogaModelTest(TestCase):
             owner_last_name="Owner",
             email=None,
             phone_number="0722222224",
-            password_hash="hash"
+            password="hash"
         )
         self.assertIsNone(mama.email)
         self.assertIsNone(mama.location_latitude)
@@ -117,7 +117,7 @@ class AddressModelTest(TestCase):
             last_name="Smith",
             email="linda@example.com",
             phone_number="0733333333",
-            password_hash="hash"
+            password="hash"
         )
 
     def test_address_creation(self):

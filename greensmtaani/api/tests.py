@@ -10,7 +10,7 @@ class CustomerAPITestCase(APITestCase):
             last_name="Wonderland",
             email="alice@example.com",
             phone_number="0711111111",
-            password_hash="hash"
+            password="hash"
         )
         self.list_url = reverse('customers-list')
 
@@ -26,7 +26,7 @@ class CustomerAPITestCase(APITestCase):
             "last_name": "Builder",
             "email": "bob@example.com",
             "phone_number": "0722222222",
-            "password_hash": "hash"
+            "password": "hash"
         }
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -38,7 +38,7 @@ class CustomerAPITestCase(APITestCase):
             "last_name": "Chaplin",
             "email": "alice@example.com",  # Duplicate
             "phone_number": "0733333333",
-            "password_hash": "hash"
+            "password": "hash"
         }
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -51,7 +51,7 @@ class MamaMbogaAPITestCase(APITestCase):
             owner_last_name="Mboga",
             email="mama@mboga.com",
             phone_number="0744444444",
-            password_hash="hash"
+            password="hash"
         )
         self.list_url = reverse('mama-mbogas-list')
 
@@ -67,7 +67,7 @@ class MamaMbogaAPITestCase(APITestCase):
             "owner_last_name": "Owner",
             "email": "new@kiosk.com",
             "phone_number": "0755555555",
-            "password_hash": "hash"
+            "password": "hash"
         }
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -79,7 +79,7 @@ class MamaMbogaAPITestCase(APITestCase):
             "owner_last_name": "Owner",
             "email": "mama@mboga.com",  # Duplicate
             "phone_number": "0756666666",
-            "password_hash": "hash"
+            "password": "hash"
         }
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -91,7 +91,7 @@ class AddressAPITestCase(APITestCase):
             last_name="Jones",
             email="dave@example.com",
             phone_number="0766666666",
-            password_hash="hash"
+            password="hash"
         )
         self.address = Address.objects.create(
             customer=self.customer,
