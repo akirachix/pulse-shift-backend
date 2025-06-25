@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import Customer, MamaMboga, Address
 from orders.models import Orders, Order_items
+from products.models import Product, ProductCategory, StockRecord 
 
 # users APIs
 class CustomerSerializer(serializers.ModelSerializer):
@@ -27,6 +28,20 @@ class Order_itemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order_items
         fields = '__all__'
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+class ProductCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategory
+        fields = '__all__'
+class StockRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockRecord
+        fields = '__all__'
+
 
 
 
