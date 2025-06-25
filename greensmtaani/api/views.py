@@ -1,8 +1,23 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from products.models import Product, ProductCategory, StockRecord
 
 from payments.models import Transaction
-from .serializer import TransactionSerializer
+from .serializer import  ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
+
+# Create your views here.
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class =ProductSerializer
+
+class ProductCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ProductCategory.objects.all()
+    serializer_class =ProductCategorySerializer
+
+class StockRecordViewSet(viewsets.ModelViewSet):
+    queryset = StockRecord.objects.all()
+    serializer_class =StockRecordSerializer
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
