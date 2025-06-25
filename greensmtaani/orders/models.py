@@ -1,5 +1,8 @@
 from django.db import models
 
+from products.models import Product
+from users.models import Address, Customer, MamaMboga
+
 # Create your models here.
 class Orders(models.Model):
     order_id=models.AutoField(primary_key=True)
@@ -13,7 +16,7 @@ class Orders(models.Model):
     expected_pickup_time = models.DateTimeField(null=True, blank=True)
     customer_feedback = models.TextField(null=True, blank=True)
     def __str__(self):
-        return f "{self.customer} {self.order_id}"
+        return f"{self.customer} {self.order_id}"
 class Order_items(models.Model):
     order_item_id=models.AutoField(primary_key=True)
     order= models.ForeignKey(Orders, on_delete=models.CASCADE)
