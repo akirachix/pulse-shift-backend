@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from products.models import Product, ProductCategory, StockRecord 
 
+# users APIs       
 # users APIs
 
 class ProductSerializer(serializers.ModelSerializer):
