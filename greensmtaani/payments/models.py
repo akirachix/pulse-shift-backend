@@ -40,7 +40,7 @@ class Transaction(models.Model):
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
-        ('reversed', 'Reversed'),
+        
     ]
     status = models.CharField(
         max_length=50,
