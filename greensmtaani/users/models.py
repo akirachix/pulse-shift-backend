@@ -19,8 +19,8 @@ class Customer(models.Model):
 class MamaMboga(models.Model):
     mama_mboga_id = models.AutoField(primary_key=True)
     kiosk_name = models.CharField(max_length=255)
-    owner_first_name = models.CharField(max_length=255)
-    owner_last_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True)
     password = models.CharField(max_length=255)
