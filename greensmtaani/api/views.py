@@ -3,14 +3,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from users.models import Customer, MamaMboga
 from django.db.models import Value as V, CharField, F
-from .serializer import UserUnionSerializer, CustomerSerializer, MamaMbogaSerializer
 from django.shortcuts import render
 from rest_framework import viewsets
+from nutrition.models import DietaryPreference,MealPlan
+from .serializer import  UserUnionSerializer, CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
 from orders.models import Orders, Order_items
 from payments.models import Transaction
-from .serializer import  Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
 from products.models import Product, ProductCategory, StockRecord
-
+from .serializer import TransactionSerializer
 
 class UserUnionList(APIView):
     def get(self, request):
@@ -91,6 +91,9 @@ class UserUnionList(APIView):
 
 
 # Create your views here.
+class DietaryPreferenceViewSet(viewsets.ModelViewSet):
+    queryset = DietaryPreference.objects.all()
+    serializer_class = DietaryPreferenceSerializer
 class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
@@ -114,5 +117,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class =TransactionSerializer
 
-
-
+class MealPlanViewSet(viewsets.ModelViewSet):
+    queryset = MealPlan.objects.all()
+    serializer_class = MealPlanSerializer
