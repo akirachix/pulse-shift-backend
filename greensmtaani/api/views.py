@@ -1,16 +1,22 @@
+import random
+from django.utils import timezone
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status,generics
 from rest_framework.response import Response
 from users.models import Customer, MamaMboga
 from django.db.models import Value as V, CharField, F
 from django.shortcuts import render
 from rest_framework import viewsets
 from nutrition.models import DietaryPreference,MealPlan
-from .serializer import  UserUnionSerializer, CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
 from orders.models import Orders, Order_items
 from payments.models import Transaction
+import logging
+
+logger = logging.getLogger(__name__)
 from products.models import Product, ProductCategory, StockRecord
-from .serializer import TransactionSerializer
+from .serializer import  UserUnionSerializer, CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
+
 
 class UserUnionList(APIView):
     def get(self, request):
@@ -88,9 +94,6 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Invalid user_type'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# Create your views here.
 class DietaryPreferenceViewSet(viewsets.ModelViewSet):
     queryset = DietaryPreference.objects.all()
     serializer_class = DietaryPreferenceSerializer
@@ -120,3 +123,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
 class MealPlanViewSet(viewsets.ModelViewSet):
     queryset = MealPlan.objects.all()
     serializer_class = MealPlanSerializer
+
+
+
+

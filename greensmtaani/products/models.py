@@ -1,7 +1,4 @@
 from django.db import models
-
-# Create your models here.
-
 from django.db import models
 from users.models import MamaMboga
 
@@ -33,6 +30,7 @@ class StockRecord(models.Model):
     mama_mboga = models.ForeignKey(MamaMboga, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=5, default="KES")
     current_stock_quantity = models.DecimalField(max_digits=10, decimal_places=2)
     last_stock_update = models.DateTimeField(auto_now=True)
     is_available = models.BooleanField(default=True)

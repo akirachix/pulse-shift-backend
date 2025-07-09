@@ -1,10 +1,8 @@
 from  django.db import  models
-
-# Create your models here.
-
 from django.contrib.postgres.fields import ArrayField
-
 from users.models import Customer
+
+
 
 class DietaryPreference(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
@@ -31,6 +29,7 @@ class DietaryPreference(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.customer} - {self.dietary_type}"
+
     
 class MealPlan(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
@@ -46,8 +45,18 @@ class MealPlan(models.Model):
     )
     version = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return f"{self.name} ({self.customer})"
+
+
+
+
+
+
+
+
+
 
 
 

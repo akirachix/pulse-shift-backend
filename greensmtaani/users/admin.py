@@ -6,3 +6,4 @@ from .models import Customer, MamaMboga, Address
 admin.site.register(Customer)
 admin.site.register(MamaMboga)
 admin.site.register(Address)
+

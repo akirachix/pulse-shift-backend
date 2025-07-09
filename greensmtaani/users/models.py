@@ -1,4 +1,5 @@
 from django.db import models
+# from django.contrib.auth import get_user_model
 
 
 # Create your models here.
@@ -42,3 +43,5 @@ class Address(models.Model):
 
     def __str__(self):
         return f"Address {self.address_id} for {self.customer} ({self.latitude}, {self.longitude})"
+
+
