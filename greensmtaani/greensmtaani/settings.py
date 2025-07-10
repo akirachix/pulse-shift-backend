@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 
 
@@ -18,8 +19,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
 SECRET_KEY = 'django-insecure-=%#twlb94*jgh^mypnp6)hqjje3i24&rdw#zz1vgp#fcs5^z0y'
+
 
 
 DEBUG = True
@@ -89,9 +90,7 @@ DATABASES = {
         'OPTIONS': {
             'options': '-c search_path=greens_mtaani,public'
         }
-
     }
-    
 }
 
 
