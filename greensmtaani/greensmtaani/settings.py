@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'payments',
     'api',
     'rest_framework',
+    'django_cronjob',
     
 
 
@@ -101,6 +102,9 @@ DATABASES = {
     }
 }
 
+CRONJOBS = [
+    ('0 1 1 * *', 'api.tasks.fetch_monthly_recipes_task'), 
+]
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

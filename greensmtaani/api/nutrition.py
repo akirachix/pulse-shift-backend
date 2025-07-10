@@ -8,9 +8,6 @@ from datetime import datetime,timedelta
 from django.utils import timezone
 from django.utils.html import strip_tags  # to fix HTML codes and retrieve empty if the recipe doesn't have summary in that api
 from nutrition.models import Recipe, Ingredient,FetchHistory  
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'greensmtaani.settings') 
-sys.path.append('/home/student/backend/project/pulse-shift-backend/greensmtaani') # adds our project root to python's module search path
-django.setup() 
 import logging
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -154,6 +151,5 @@ def fetch_and_save_monthly_new_recipes(): # Fetches up to 15,000 new recipes in 
 
 
 if __name__ == "__main__":
-
     count = fetch_and_save_new_recipes()
     print(f"Total new recipes saved: {count}")
