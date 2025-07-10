@@ -22,7 +22,7 @@ class PaymentModelTest(TestCase):
         payment = Payment.objects.create(
             order=self.order,
             customer=self.customer,
-            total_amount=Decimal("100.00"),  # <-- USE total_amount
+            total_amount=Decimal("100.00"),  
             phone_number="0712345678"
         )
         self.assertEqual(payment.status, 'PENDING')
