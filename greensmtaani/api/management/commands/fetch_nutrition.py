@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from api.nutrition import fetch_and_save_new_recipes  # Import your main function
+from api.nutrition import fetch_and_save_new_recipes  
 
 class Command(BaseCommand):
     help = 'Fetch and save new recipes from Spoonacular API'

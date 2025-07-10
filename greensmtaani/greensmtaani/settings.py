@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'payments',
     'api',
     'rest_framework',
-    'django_cronjob',
+    'django_crontab',
     
 
 
