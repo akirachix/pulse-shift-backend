@@ -13,7 +13,7 @@ def api_client():
 @pytest.fixture
 def customer(db):
     return Customer.objects.create(
-        first_name="John", last_name="Doe", phone_number="0712345678"
+        first_name="Johnny", last_name="Deedy", phone_number="0712345678"
     )
 
 @pytest.fixture
