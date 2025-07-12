@@ -1,0 +1,15 @@
+
+Spoonacular API Key loaded: No
+Starting paginated fetch from Spoonacular API from offset 0...
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+API request failed at offset 0: Invalid URL 'None': No scheme supplied. Perhaps you meant https://None?
+Saved 0 new recipes to the database.
+Total new recipes saved: 0
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+API request failed at offset 0: Invalid URL 'None': No scheme supplied. Perhaps you meant https://None?
+Saved 0 new recipes to the database.
+Total new recipes saved: 0
+Spoonacular API Key loaded: No
+Spoonacular API Key loaded: Yes

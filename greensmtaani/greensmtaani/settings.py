@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,20 +21,22 @@ import os
 # SPOONACULAR_API_KEY = os.getenv('SPOONACULAR_API_KEY')
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = os.getenv("SECRET_KEY")
-SECRET_KEY = 'django-insecure-7xw!z$8p0l6h@k!v&4f@c3^e2p1r9!s9t2n5z%g^b1@h7#q6a8'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+
+SECRET_KEY = 'django-insecure-=%#twlb94*jgh^mypnp6)hqjje3i24&rdw#zz1vgp#fcs5^z0y'
+
+
+
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'd3ee-41-90-172-68.ngrok-free.app']
 
 
-# Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,6 +53,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'django_crontab',
+    'locations',
     
 
 
@@ -85,8 +89,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'greensmtaani.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -102,11 +105,14 @@ DATABASES = {
     }
 }
 
+
 CRONJOBS = [
-    ('0 1 1 * *', 'api.tasks.fetch_monthly_recipes_task'), 
+    ('0 0 1 * *', 'api.tasks.fetch_monthly_recipes_task'),
+ 
 ]
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -124,8 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -136,8 +140,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
 
@@ -145,4 +147,33 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DARAJA_CONSUMER_KEY = '0AubmfaECOKS6BnfpYTn1H0iTjr107rZEgGCFgBBO8kAuSRC'
+DARAJA_CONSUMER_SECRET = 'ELiQioApJ547QQ0bjVDynb3Jodk7FUdaLxItpmEQJnkyUfJZ1bxmaMmjOCANlUr1'
+DARAJA_SHORTCODE = '174379'
+DARAJA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+DARAJA_BASE_URL = 'https://sandbox.safaricom.co.ke'
+DARAJA_CALLBACK_URL = 'https://216e-41-90-172-68.ngrok-free.app/payments/callback/' 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'nutrition_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR,'api','nutrition_output.log'),
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'nutrition': {
+            'handlers': ['nutrition_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

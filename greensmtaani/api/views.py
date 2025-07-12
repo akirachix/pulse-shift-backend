@@ -2,20 +2,23 @@ import random
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework import status,generics
 from rest_framework.response import Response
-from users.models import Customer, MamaMboga
+from rest_framework import status
+from .sandbox import MpesaAPI
 from django.db.models import Value as V, CharField, F
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from nutrition.models import DietaryPreference,MealPlan
+from nutrition.models import DietaryPreference,MealPlan, FetchHistory,Recipe,Ingredient
 from orders.models import Orders, Order_items
-from payments.models import Transaction
-import logging
-
-logger = logging.getLogger(__name__)
+from users.models import Customer, MamaMboga
 from products.models import Product, ProductCategory, StockRecord
-from .serializer import  UserUnionSerializer, CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer, TransactionSerializer
+from payments.models import Payment, Payout
+import logging
+logger = logging.getLogger(__name__)
+from .serializer import  UserUnionSerializer,PayoutSerializer,PaymentSerializer,CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer,RecipeSerializer,IngredientSerializer,FetchHistorySerializer,STKPushSerializer
 
 
 class UserUnionList(APIView):
@@ -94,9 +97,15 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Invalid user_type'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
 class DietaryPreferenceViewSet(viewsets.ModelViewSet):
     queryset = DietaryPreference.objects.all()
     serializer_class = DietaryPreferenceSerializer
+
 class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
@@ -116,13 +125,49 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
 class StockRecordViewSet(viewsets.ModelViewSet):
     queryset = StockRecord.objects.all()
     serializer_class =StockRecordSerializer
-class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
-    serializer_class =TransactionSerializer
+
+
+class PaymentViewSet(viewsets.ModelViewSet):
+      queryset = Payment.objects.all()
+      serializer_class =PaymentSerializer
+
+class PayoutViewSet(viewsets.ModelViewSet):
+      queryset = Payout.objects.all()
+      serializer_class =PayoutSerializer
+
+
+class STKPushView(APIView):
+    def post(self, request):
+        serializer = STKPushSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            daraja = MpesaAPIAPI()
+            response = daraja.stk_push(
+                phone_number=data['phone_number'],
+                amount=data['amount'],
+                account_reference=data['account_reference'],
+                transaction_desc=data['transaction_desc']
+            )
+            return Response(response)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def daraja_callback(request):
+    print("Daraja Callback Data:", request.data)
+    return Response({"ResultCode": 0, "ResultDesc": "Accepted"})
+
 
 class MealPlanViewSet(viewsets.ModelViewSet):
     queryset = MealPlan.objects.all()
     serializer_class = MealPlanSerializer
+class IngredientViewSet(viewsets.ModelViewSet):
+       queryset = Ingredient.objects.all()
+       serializer_class = IngredientSerializer
+class RecipeViewSet(viewsets.ModelViewSet):
+       queryset = Recipe.objects.all()
+       serializer_class = RecipeSerializer
+class FetchHistoryViewSet(viewsets.ModelViewSet):
+       queryset = FetchHistory.objects.all()
+       serializer_class = FetchHistorySerializer
 
 
 

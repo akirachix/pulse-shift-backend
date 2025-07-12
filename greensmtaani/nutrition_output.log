@@ -1,0 +1,85 @@
+Spoonacular API Key loaded: No
+Starting paginated fetch from Spoonacular API from offset 0, since 2025-06-01 19:55:01.730394+00:00...
+Spoonacular API Key loaded: No
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0, since 2025-06-01 20:00:02.275454+00:00...
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0, since 2025-06-01 20:02:22.973994+00:00...
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: No
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0, since 2025-06-01 20:11:02.072631+00:00...
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0, since 2025-06-01 20:12:57.748938+00:00...
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 4 recipes, total fetched so far: 4
+Fetched 2 recipes, total fetched so far: 6
+No more recipes returned by API.
+Saved 6 new recipes to the database.
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 4 recipes, total fetched so far: 4
+Fetched 2 recipes, total fetched so far: 6
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 4 recipes, total fetched so far: 4
+Fetched 2 recipes, total fetched so far: 6
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 4 recipes, total fetched so far: 4
+Fetched 2 recipes, total fetched so far: 6
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 4 recipes, total fetched so far: 4
+Fetched 2 recipes, total fetched so far: 6
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 4 recipes, total fetched so far: 4
+Fetched 2 recipes, total fetched so far: 6
+No more recipes returned by API.
+Saved 0 new recipes to the database.
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 100 recipes, total fetched so far: 100
+Fetched 100 recipes, total fetched so far: 200
+Fetched 100 recipes, total fetched so far: 300
+Fetched 100 recipes, total fetched so far: 400
+Fetched 100 recipes, total fetched so far: 500
+Fetched 100 recipes, total fetched so far: 600
+Fetched 100 recipes, total fetched so far: 700
+Fetched 100 recipes, total fetched so far: 800
+Fetched 100 recipes, total fetched so far: 900
+Fetched 100 recipes, total fetched so far: 1000
+Fetched 100 recipes, total fetched so far: 1100
+Fetched 100 recipes, total fetched so far: 1200
+Fetched 100 recipes, total fetched so far: 1300
+Fetched 100 recipes, total fetched so far: 1400
+API request failed at offset 1400: 402 Client Error: Payment Required for url: https://api.spoonacular.com/recipes/complexSearch?apiKey=a90a3638cf1a49b5bdb5bef3ec213a26&includeIngredients=&number=100&offset=1400&addRecipeInformation=True&fillIngredients=True&instructionsRequired=True&sort=popularity
+Spoonacular API Key loaded: No
+Spoonacular API Key loaded: No
+Spoonacular API Key loaded: No
