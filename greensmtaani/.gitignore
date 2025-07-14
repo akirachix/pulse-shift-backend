@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-
 .env
-
-
-=======
 env/
 __pycache__/
 *.pyc
 db.sqlite3
 .env
->>>>>>> fc07693fd8c67e532d28b2d48529220fe1c2e41d
+nutrition_output.log
+
