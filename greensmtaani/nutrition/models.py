@@ -1,10 +1,8 @@
 from  django.db import  models
-
-# Create your models here.
-
 from django.contrib.postgres.fields import ArrayField
-
 from users.models import Customer
+
+
 
 class DietaryPreference(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
@@ -31,6 +29,7 @@ class DietaryPreference(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.customer} - {self.dietary_type}"
+
     
 class MealPlan(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
@@ -46,8 +45,42 @@ class MealPlan(models.Model):
     )
     version = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return f"{self.name} ({self.customer})"
+class Ingredient(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    def __str__(self):
+        return self.name
+class Recipe(models.Model):
+    spoonacular_id = models.IntegerField(unique=True)
+    title = models.CharField(max_length=255)
+    image_url = models.URLField(blank=True, null=True)
+    summary = models.TextField(blank=True, null=True)
+    instructions = models.TextField(blank=True, null=True)
+    source_url = models.URLField(blank=True, null=True)
+    ingredients = models.ManyToManyField(Ingredient, related_name='recipes')
+    ready_in_minutes = models.IntegerField(null=True, blank=True)
+    servings = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.title
+class FetchHistory(models.Model):
+    api_name = models.CharField(max_length=100, unique=True)
+    last_fetch = models.DateTimeField()
+    last_offset = models.IntegerField(default=0)
+    def __str__(self):
+        return f"{self.api_name} last fetched at {self.last_fetch} with offset {self.last_offset}"
+
+
+
+
+
+
+
+
+
 
 
 

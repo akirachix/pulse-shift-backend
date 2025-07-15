@@ -12,11 +12,19 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# load_dotenv(dotenv_path=BASE_DIR/'.env')
+# SPOONACULAR_API_KEY = os.getenv('SPOONACULAR_API_KEY')
 
 
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 SECRET_KEY = 'django-insecure-=%#twlb94*jgh^mypnp6)hqjje3i24&rdw#zz1vgp#fcs5^z0y'
@@ -44,6 +52,10 @@ INSTALLED_APPS = [
     'payments',
     'api',
     'rest_framework',
+    'django_crontab',
+    'locations',
+    
+
 
 ]
 
@@ -94,6 +106,14 @@ DATABASES = {
 }
 
 
+CRONJOBS = [
+    ('0 0 1 * *', 'api.tasks.fetch_monthly_recipes_task'),
+ 
+]
+# Password validation
+# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -124,6 +144,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -133,3 +156,24 @@ DARAJA_SHORTCODE = '174379'
 DARAJA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
 DARAJA_BASE_URL = 'https://sandbox.safaricom.co.ke'
 DARAJA_CALLBACK_URL = 'https://216e-41-90-172-68.ngrok-free.app/payments/callback/' 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'nutrition_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR,'api','nutrition_output.log'),
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'nutrition': {
+            'handlers': ['nutrition_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

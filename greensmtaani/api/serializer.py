@@ -1,12 +1,12 @@
 from rest_framework import serializers
-
+from users.models import MamaMboga, Customer, Address
+from nutrition.models import DietaryPreference, MealPlan,Recipe,Ingredient,FetchHistory
 from orders.models import Orders, Order_items
 from products.models import Product, ProductCategory, StockRecord
 from payments.models import Payment, Payout
-from users.models import MamaMboga, Customer, Address
-from nutrition.models import DietaryPreference, MealPlan
-from products.models import Product, ProductCategory, StockRecord 
-from rest_framework import serializers
+
+
+
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,9 +41,8 @@ class OrdersSerializer(serializers.ModelSerializer):
 
 class Order_itemsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Order_items
+        model = Order_items   
         fields = '__all__'
-
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -90,11 +89,22 @@ class DietaryPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DietaryPreference
         fields = '__all__'
-
-class MealPlanSerializer(serializers.ModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MealPlan
-        fields = '__all__'  
+        model = Ingredient
+        fields = '__all__'
+class RecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+
+class FetchHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FetchHistory
+        fields ='__all__'
+
+
+
 
 
 
