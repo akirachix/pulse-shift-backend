@@ -4,5 +4,5 @@ __pycache__/
 *.pyc
 db.sqlite3
 .env
-nutrition_output.log
-
+api/nutrition_output.log
+api/*.log
