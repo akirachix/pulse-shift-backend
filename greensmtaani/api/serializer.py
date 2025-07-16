@@ -4,7 +4,7 @@ from nutrition.models import DietaryPreference, MealPlan,Recipe,Ingredient,Fetch
 from orders.models import Orders, Order_items
 from products.models import Product, ProductCategory, StockRecord
 from payments.models import Payment, Payout
-
+from locations.models import GeoLocation
 
 
 
@@ -13,10 +13,26 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = '__all__'
 
+
 class MamaMbogaSerializer(serializers.ModelSerializer):
     class Meta:
         model = MamaMboga
         fields = '__all__'
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+
+
+        if instance.location_latitude and instance.location_longitude:
+            GeoLocation.objects.create(
+                name=instance.kiosk_name,
+                latitude=instance.location_latitude,
+                longitude=instance.location_longitude,
+                is_mama_mboga=True,
+                address=instance.address_description or ""
+            )
+
+        return instance
+
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,15 +40,17 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserUnionSerializer(serializers.Serializer):
+    user_type = serializers.CharField()
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField(allow_null=True)
     phone_number = serializers.CharField()
     password = serializers.CharField()
+    image_url = serializers.URLField(allow_null=False, required=True)
     registration_date = serializers.DateTimeField()
     is_active = serializers.BooleanField()
-    user_type = serializers.CharField()
+
 
 class OrdersSerializer(serializers.ModelSerializer):
     class Meta:

@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+load_dotenv()
+from decouple import config
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,15 +28,14 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
-SECRET_KEY = 'django-insecure-=%#twlb94*jgh^mypnp6)hqjje3i24&rdw#zz1vgp#fcs5^z0y'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'd3ee-41-90-172-68.ngrok-free.app']
+ALLOWED_HOSTS = ["greensmtaani.herokuapp.com", "127.0.0.1", "localhost", 'd3ee-41-90-172-68.ngrok-free.app']
+
 
 
 
@@ -53,8 +55,9 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'django_crontab',
+    # 'django_filters',
     'locations',
-    
+    "corsheaders",
 
 
 ]
@@ -67,6 +70,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'greensmtaani.urls'
@@ -91,19 +96,14 @@ WSGI_APPLICATION = 'greensmtaani.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.rjxovafjhiyqvcqypafr',
-        'PASSWORD': 'lionfishdb624',
-        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',
-        'PORT': '5432',
-        'OPTIONS': {
-            'options': '-c search_path=greens_mtaani,public'
+DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+if not os.getenv("DATABASE_URL"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-}
 
 
 CRONJOBS = [
@@ -141,21 +141,29 @@ USE_TZ = True
 
 
 
-STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DARAJA_CONSUMER_KEY = '0AubmfaECOKS6BnfpYTn1H0iTjr107rZEgGCFgBBO8kAuSRC'
-DARAJA_CONSUMER_SECRET = 'ELiQioApJ547QQ0bjVDynb3Jodk7FUdaLxItpmEQJnkyUfJZ1bxmaMmjOCANlUr1'
-DARAJA_SHORTCODE = '174379'
-DARAJA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
-DARAJA_BASE_URL = 'https://sandbox.safaricom.co.ke'
-DARAJA_CALLBACK_URL = 'https://216e-41-90-172-68.ngrok-free.app/payments/callback/' 
+DARAJA_CONSUMER_KEY = config('DARAJA_CONSUMER_KEY')
+DARAJA_CONSUMER_SECRET = config('DARAJA_CONSUMER_SECRET')
+DARAJA_SHORTCODE = config('DARAJA_SHORTCODE')
+DARAJA_PASSKEY = config('DARAJA_PASSKEY')
+DARAJA_BASE_URL = config('DARAJA_BASE_URL')
+DARAJA_CALLBACK_URL = config('DARAJA_CALLBACK_URL')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

@@ -9,6 +9,7 @@ class Customer(models.Model):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, unique=True)
     password = models.CharField(max_length=255)
+    image_url = models.URLField(null=True, blank=True)
     registration_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -23,6 +24,7 @@ class MamaMboga(models.Model):
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True)
     password = models.CharField(max_length=255)
+    image_url = models.URLField(null=True, blank=True)
     location_latitude = models.FloatField(null=True, blank=True)
     location_longitude = models.FloatField(null=True, blank=True)
     address_description = models.TextField(null=True, blank=True)

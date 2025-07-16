@@ -18,13 +18,11 @@ router.register(r"fetchhistory",FetchHistoryViewSet, basename='fetchhistory')
 
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('daraja/stk-push/', STKPushView.as_view(), name='daraja-stk-push'),
-    path('daraja/callback/', daraja_callback, name='daraja-callback'),
-    path('users/', UserUnionList.as_view(), name='users'),
-    path('users/<int:pk>/', UserUnionList.as_view(), name='user-detail'),
-  
-   
+   path('', include(router.urls)),
+   path('daraja/stk-push/', STKPushView.as_view(), name='daraja-stk-push'),
+   path('daraja/callback/', daraja_callback, name='daraja-callback'),
+   path('users/', UserUnionList.as_view(), name='users'),
+   path('users/<int:pk>/', UserUnionList.as_view(), name='user-detail'), 
 ]
 
 

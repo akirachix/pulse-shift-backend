@@ -6,3 +6,7 @@ db.sqlite3
 .env
 api/nutrition_output.log
 api/*.log
+ngrok
+ngrok-v3-stable-linux-amd64.tgz
+utils
+.coverage

@@ -9,7 +9,7 @@ from rest_framework import status
 from .sandbox import MpesaAPI
 from django.db.models import Value as V, CharField, F
 from django.shortcuts import render
-from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from nutrition.models import DietaryPreference,MealPlan, FetchHistory,Recipe,Ingredient
 from orders.models import Orders, Order_items
@@ -21,26 +21,66 @@ logger = logging.getLogger(__name__)
 from .serializer import  UserUnionSerializer,PayoutSerializer,PaymentSerializer,CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer,RecipeSerializer,IngredientSerializer,FetchHistorySerializer,STKPushSerializer
 
 
-class UserUnionList(APIView):
-    def get(self, request):
-        customers = Customer.objects.annotate(
-            user_type=V('customer', output_field=CharField()),
-            id=F('customer_id')
-        ).values(
-            'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
-            'registration_date', 'is_active', 'user_type'
-        )
-        mamambogas = MamaMboga.objects.annotate(
-            user_type=V('mama_mboga', output_field=CharField()),
-            id=F('mama_mboga_id')
-        ).values(
-            'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
-            'registration_date', 'is_active', 'user_type'
-        )
-        union = customers.union(mamambogas)
-        serializer = UserUnionSerializer(union, many=True)
-        return Response(serializer.data)
+# class UserUnionList(APIView):
+#     def get(self, request, pk=None):
+#         customers = Customer.objects.annotate(
+#             user_type=V('customer', output_field=CharField()),
+#             id=F('customer_id')
+#         ).values(
+#             'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
+#             'registration_date', 'is_active', 'user_type', 'image_url'
+#         )
+#         mamambogas = MamaMboga.objects.annotate(
+#             user_type=V('mama_mboga', output_field=CharField()),
+#             id=F('mama_mboga_id')
+#         ).values(
+#             'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
+#             'registration_date', 'is_active', 'user_type', 'image_url'
+#         )
+#         union = customers.union(mamambogas)
+#         serializer = UserUnionSerializer(union, many=True)
+#         return Response(serializer.data)
     
+
+
+
+
+class UserUnionList(APIView):
+    def get(self, request, pk=None): 
+        if pk:
+            
+            try:
+                user = Customer.objects.get(pk=pk)
+                serializer = CustomerSerializer(user)
+                return Response(serializer.data)
+            except Customer.DoesNotExist:
+                try:
+                    user = MamaMboga.objects.get(pk=pk)
+                    serializer = MamaMbogaSerializer(user)
+                    return Response(serializer.data)
+                except MamaMboga.DoesNotExist:
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            # Handle list retrieval
+            customers = Customer.objects.annotate(
+                user_type=V('customer', output_field=CharField()),
+                id=F('customer_id')
+            ).values(
+                'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
+                'registration_date', 'is_active', 'user_type', 'image_url'
+            )
+            mamambogas = MamaMboga.objects.annotate(
+                user_type=V('mama_mboga', output_field=CharField()),
+                id=F('mama_mboga_id')
+            ).values(
+                'id', 'first_name', 'last_name', 'email', 'phone_number', 'password', 
+                'registration_date', 'is_active', 'user_type', 'image_url'
+            )
+            union = customers.union(mamambogas)
+            serializer = UserUnionSerializer(union, many=True)
+            return Response(serializer.data)
+
+
     def post(self, request):
         data = request.data
         user_type = data.get('user_type')
@@ -50,13 +90,15 @@ class UserUnionList(APIView):
             serializer = MamaMbogaSerializer(data=data)
         else:
             return Response({'error': 'Unknown user_type'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
     def patch(self, request, pk):
         user_type = request.data.get('user_type')
         if user_type == 'customer':
@@ -74,11 +116,13 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Invalid user_type'}, status=status.HTTP_400_BAD_REQUEST)
 
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, pk):
         user_type = request.data.get('user_type')
@@ -97,8 +141,6 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Invalid user_type'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 
 
 

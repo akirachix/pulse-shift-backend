@@ -48,10 +48,12 @@ class MealPlan(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.customer})"
+    
 class Ingredient(models.Model):
     name = models.CharField(max_length=255, unique=True)
     def __str__(self):
         return self.name
+    
 class Recipe(models.Model):
     spoonacular_id = models.IntegerField(unique=True)
     title = models.CharField(max_length=255)
@@ -66,6 +68,7 @@ class Recipe(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.title
+    
 class FetchHistory(models.Model):
     api_name = models.CharField(max_length=100, unique=True)
     last_fetch = models.DateTimeField()
