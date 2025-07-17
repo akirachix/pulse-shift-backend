@@ -8,7 +8,7 @@ def reverse_geocode(lat, lon):
             "lat": lat,
             "lon": lon,
             "format": "json",
-            "addressdetails": 1,
+            "addressdetails": 1
         }
         headers = {
             "User-Agent": "location-app/1.0"
