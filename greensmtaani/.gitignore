@@ -1,8 +1,0 @@
-.env
-env/
-__pycache__/
-*.pyc
-db.sqlite3
-.env
-api/nutrition_output.log
-api/*.log
