@@ -6,3 +6,6 @@ db.sqlite3
 .env
 .env
 staticfiles
+ngrok
+ngrok-v3-stable-linux-amd64.tgz
+utils
