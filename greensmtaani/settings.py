@@ -14,7 +14,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 load_dotenv()
-from decouple import config
 import dj_database_url
 
 
@@ -157,13 +156,16 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SPOONACULAR_API_KEY = config('SPOONACULAR_API_KEY')
-DARAJA_CONSUMER_KEY = config('DARAJA_CONSUMER_KEY')
-DARAJA_CONSUMER_SECRET = config('DARAJA_CONSUMER_SECRET')
-DARAJA_SHORTCODE = config('DARAJA_SHORTCODE')
-DARAJA_PASSKEY = config('DARAJA_PASSKEY')
-DARAJA_BASE_URL = config('DARAJA_BASE_URL')
-DARAJA_CALLBACK_URL = config('DARAJA_CALLBACK_URL')
+SPOONACULAR_API_KEY = os.getenv('SPOONACULAR_API_KEY')
+SPOONACULAR_BASE_URL = os.getenv('SPOONACULAR_BASE_URL')
+DARAJA_CONSUMER_KEY = os.getenv('DARAJA_CONSUMER_KEY')
+DARAJA_CONSUMER_SECRET = os.getenv('DARAJA_CONSUMER_SECRET')
+DARAJA_SHORTCODE = os.getenv('DARAJA_SHORTCODE')
+DARAJA_PASSKEY = os.getenv('DARAJA_PASSKEY')
+DARAJA_BASE_URL = os.getenv('DARAJA_BASE_URL')
+DARAJA_CALLBACK_URL = os.getenv('DARAJA_CALLBACK_URL')
+GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
