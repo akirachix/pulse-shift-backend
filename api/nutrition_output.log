@@ -1,0 +1,28 @@
+Spoonacular API Key loaded: No
+Starting paginated fetch from Spoonacular API from offset 0...
+Starting paginated fetch from Spoonacular API from offset 0...
+Spoonacular API Key loaded: Yes
+Starting paginated fetch from Spoonacular API from offset 0...
+Fetched 100 recipes, total fetched so far: 100
+Fetched 100 recipes, total fetched so far: 200
+Fetched 100 recipes, total fetched so far: 300
+Fetched 100 recipes, total fetched so far: 400
+Fetched 100 recipes, total fetched so far: 500
+Fetched 100 recipes, total fetched so far: 600
+Fetched 100 recipes, total fetched so far: 700
+Fetched 100 recipes, total fetched so far: 800
+Fetched 100 recipes, total fetched so far: 900
+Fetched 100 recipes, total fetched so far: 1000
+Fetched 100 recipes, total fetched so far: 1100
+Fetched 100 recipes, total fetched so far: 1200
+Fetched 100 recipes, total fetched so far: 1300
+Fetched 100 recipes, total fetched so far: 1400
+Fetched 100 recipes, total fetched so far: 1500
+Fetched 100 recipes, total fetched so far: 1600
+API request failed at offset 1600: 402 Client Error: Payment Required for url: https://api.spoonacular.com/recipes/complexSearch?apiKey=a90a3638cf1a49b5bdb5bef3ec213a26&includeIngredients=&number=100&offset=1600&addRecipeInformation=True&fillIngredients=True&instructionsRequired=True&sort=popularity
+Saved 1000 new recipes to the database.
+Total new recipes saved: 1000
+Starting paginated fetch from Spoonacular API from offset 0...
+API request failed at offset 0: 402 Client Error: Payment Required for url: https://api.spoonacular.com/recipes/complexSearch?apiKey=a90a3638cf1a49b5bdb5bef3ec213a26&includeIngredients=&number=100&offset=0&addRecipeInformation=True&fillIngredients=True&instructionsRequired=True&sort=popularity
+Saved 0 new recipes to the database.
+Total new recipes saved: 0

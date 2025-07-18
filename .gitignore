@@ -1,0 +1,11 @@
+env/
+__pycache__/
+*.pyc
+db.sqlite3
+*.pyo
+.env
+.env
+staticfiles
+ngrok
+ngrok-v3-stable-linux-amd64.tgz
+utils

@@ -1,0 +1,1 @@
+web: gunicorn greensmtaani.wsgi --log-file -
