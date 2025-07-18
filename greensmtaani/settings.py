@@ -36,9 +36,6 @@ DEBUG = False
 ALLOWED_HOSTS = ["greensmtaani.herokuapp.com", "127.0.0.1", "localhost", 'd3ee-41-90-172-68.ngrok-free.app']
 
 
-
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -149,14 +146,11 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
-
+CORS_ALLOWED_ALL_ORIGINS = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SPOONACULAR_API_KEY = os.getenv('SPOONACULAR_API_KEY')
