@@ -9,5 +9,3 @@ staticfiles
 ngrok
 ngrok-v3-stable-linux-amd64.tgz
 utils
-drop_table.py
-drop_table.py.save
