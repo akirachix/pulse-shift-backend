@@ -17,6 +17,7 @@ load_dotenv()
 import dj_database_url
 
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
 # load_dotenv(dotenv_path=BASE_DIR/'.env')
@@ -34,9 +35,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = ["greensmtaani.herokuapp.com", "127.0.0.1", "localhost", 'd3ee-41-90-172-68.ngrok-free.app']
-
-
-
 
 
 INSTALLED_APPS = [
@@ -63,14 +61,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',   
 ]
 
 ROOT_URLCONF = 'greensmtaani.urls'
@@ -149,10 +147,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True 
+
+
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
