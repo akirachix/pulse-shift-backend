@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["greensmtaani.herokuapp.com", "127.0.0.1", "localhost", 'd3ee-41-90-172-68.ngrok-free.app']
+ALLOWED_HOSTS = ["*"]
 
 
 INSTALLED_APPS = [
