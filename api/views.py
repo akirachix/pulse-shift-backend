@@ -86,69 +86,116 @@ class IsProfileOwnerOrAdmin(permissions.BasePermission):
             return True
         return obj.user == request.user
 
+
+
+logger = logging.getLogger(__name__)
+
+
 class RegisterView(APIView):
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
 
     def post(self, request):
         data = request.data
         user_type = data.get('user_type')
+        logger.info(f"Register request data: {data}")
 
-        if user_type in ['customer', 'mama_mboga', 'admin', 'moderator']:
-            serializer = RegisterSerializer(data=data) 
-            if serializer.is_valid():
-                user = serializer.save() 
+        if user_type not in ['customer', 'mama_mboga', 'admin', 'moderator']:
+            return Response(
+                {'error': 'Invalid user_type. Must be customer, mama_mboga, admin, or moderator'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        profile = None
-
-        if user_type == 'customer':
-            customer_serializer = CustomerSerializer(data=data)
-            customer_serializer.is_valid(raise_exception=True)
-            profile = customer_serializer.save(user=user)
-        elif user_type == 'mama_mboga':
-            mama_mboga_serializer = MamaMbogaSerializer(data=data)
-            mama_mboga_serializer.is_valid(raise_exception=True)
-            profile = mama_mboga_serializer.save(user=user)
-
-        if profile:
-            return Response({'detail': f'{user_type.capitalize()} registered successfully', 'user_id': user.id}, status=status.HTTP_201_CREATED)
-        else:
+        user_data = data.get('user_data', {})
+        serializer = RegisterSerializer(data=user_data)
+        if not serializer.is_valid():
+            logger.error(f"RegisterSerializer errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        user = serializer.save()
+        logger.info(f"User created: {user.username}")
 
-class LoginAPI(generics.GenericAPIView):
-    serializer_class = LoginSerializer
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
+        profile = None
+        try:
+            if user_type == 'customer':
+                customer_serializer = CustomerSerializer(data=data, context={'user': user})
+                if customer_serializer.is_valid():
+                    profile = customer_serializer.save()
+                    logger.info(f"Customer profile created for user: {user.username}")
+                else:
+                    logger.error(f"CustomerSerializer errors: {customer_serializer.errors}")
+                    user.delete()
+                    return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            elif user_type == 'mama_mboga':
+                mama_mboga_serializer = MamaMbogaSerializer(data=data, context={'user': user})
+                if mama_mboga_serializer.is_valid():
+                    profile = mama_mboga_serializer.save()
+                    logger.info(f"MamaMboga profile created for user: {user.username}")
+                else:
+                    logger.error(f"MamaMbogaSerializer errors: {mama_mboga_serializer.errors}")
+                    user.delete()
+                    return Response(mama_mboga_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            elif user_type in ['admin', 'moderator']:
+                profile = user.admin_mod_profile 
+        except Exception as e:
+            logger.error(f"Error creating profile: {str(e)}")
+            user.delete()
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         login(request, user)
         token, created = Token.objects.get_or_create(user=user)
-
-        # Determine user_type
-        if hasattr(user, 'customer'):
-            user_type = 'customer'
-            profile = user.customer
-        elif hasattr(user, 'mama_mboga'):
-            user_type = 'mama_mboga'
-            profile = user.mama_mboga
-        elif hasattr(user, 'admin_mod_profile'):
-            user_type = user.admin_mod_profile.role
-            profile = user.admin_mod_profile
-        else:
-            user_type = 'user'
-            profile = user
-            
-
+        profile = profile or user 
         user_data = UserProfileUnionSerializer(profile).data
         user_data['user_type'] = user_type
 
         return Response({
             "user": user_data,
             "token": token.key
-        })
+        }, status=status.HTTP_201_CREATED)
+
+
+
+logger = logging.getLogger(__name__)
+
+class LoginAPI(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        logger.info(f"Login request data: {request.data}")
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        logger.info(f"Authenticated user: {user.username if user else None}")
+
+        login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
+
+        profile = None
+        user_type = None
+        if hasattr(user, 'customer') and user.customer:
+            user_type = 'customer'
+            profile = user.customer
+        elif hasattr(user, 'mama_mboga') and user.mama_mboga:
+            user_type = 'mama_mboga'
+            profile = user.mama_mboga
+        elif hasattr(user, 'admin_mod_profile') and user.admin_mod_profile:
+            user_type = user.admin_mod_profile.role
+            profile = user.admin_mod_profile
+        else:
+            user_type = 'user'
+            profile = user  
+
+        logger.info(f"User type: {user_type}, Profile: {profile}")
+        user_data = UserProfileUnionSerializer(profile).data
+        user_data['user_type'] = user_type
+
+        return Response({
+            "user": user_data,
+            "token": token.key
+        }, status=status.HTTP_200_OK)
+
+
+
 
 class LogoutAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -178,8 +225,6 @@ class ProfileView(APIView):
 
 
 
-
-
 class UserUnionList(APIView):
     permission_classes = [IsAdminUser] 
 
@@ -205,7 +250,7 @@ class UserUnionList(APIView):
             return Response(serializer.data)
         
     def post(self, request):
-        # Registration should go through RegisterView
+
         return Response({'error': 'Use /api/register/ for user registration'}, 
                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -249,7 +294,38 @@ class UserUnionList(APIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def to_representation(self, instance):
 
+        if hasattr(instance, 'user') and isinstance(instance.user, User):
+            user = instance.user
+            data = {
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'user_type': self.get_user_type(instance),
+                'phone_number': getattr(instance, 'phone_number', ''),
+                'image_url': getattr(instance, 'image_url', ''),
+                'registration_date': user.date_joined,
+                'is_active': user.is_active,
+                'kiosk_name': getattr(instance, 'kiosk_name', ''),
+            }
+            return data
+
+        data = super().to_representation(instance)
+        if hasattr(instance, 'customer'):
+            customer_data = CustomerSerializer(instance.customer).data
+            data.update(customer_data)
+            dietary_prefs = getattr(instance.customer, 'dietary_preferences', None)
+            if dietary_prefs is not None:
+                data['dietary_preferences'] = DietaryPreferenceSerializer(
+                    dietary_prefs.all(), many=True
+                ).data
+        elif hasattr(instance, 'mama_mboga'):
+            mama_data = MamaMbogaSerializer(instance.mama_mboga).data
+            data.update(mama_data)
+        return data
 
 class DietaryPreferenceViewSet(viewsets.ModelViewSet):
     queryset = DietaryPreference.objects.all()
@@ -358,7 +434,3 @@ class FetchHistoryViewSet(viewsets.ModelViewSet):
        queryset = FetchHistory.objects.all()
        serializer_class = FetchHistorySerializer
        permission_classes = [IsAdminUser]
-
-
-
-

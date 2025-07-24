@@ -8,30 +8,23 @@ from payments.models import Payment, Payout
 from locations.models import GeoLocation
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-
-
-
+from django.utils import timezone
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     user_type = serializers.CharField(write_only=True, required=False)
-
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'user_type')
         extra_kwargs = {'password': {'write_only': True}}
-
     def create(self, validated_data):
         user_type = validated_data.pop('user_type', None)
         password = validated_data.pop('password')
-
         # Create user
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -40,64 +33,45 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', '')
         )
-        
         if user_type in ['admin', 'moderator']:
             user.is_staff = True
             user.save()
-
             AdminModeratorProfile.objects.create(user=user, role=user_type)
         else:
             user.is_staff = False
             user.save()
-
         return user
-
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
-
     def validate(self, data):
         user = authenticate(**data)
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Incorrect Credentials")
-    
-
 
 class CustomerSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    user_data = UserSerializer(write_only=True)
-
     class Meta:
         model = Customer
-        fields = '__all__'
-
+        fields = ['id', 'user', 'phone_number', 'image_url', 'registration_date', 'is_active']
     def create(self, validated_data):
-        user_data = validated_data.pop('user_data')
-        user_serializer = UserSerializer(data=user_data)
-        user_serializer.is_valid(raise_exception=True)
-        user = user_serializer.save()
-        customer = Customer.objects.create(user=user, **validated_data)
-        return customer
-
+        user = self.context.get('user')
+        if not user:
+            raise serializers.ValidationError("User must be provided")
+        return Customer.objects.create(user=user, **validated_data)
 
 class MamaMbogaSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    user_data = UserSerializer(write_only=True)  # write-only nested input data
-
     class Meta:
         model = MamaMboga
-        fields = '__all__'
-
+        fields = ['id', 'user', 'kiosk_name', 'phone_number', 'image_url', 'location_latitude', 'location_longitude', 'address_description', 'registration_date', 'is_active']
     def create(self, validated_data):
-        user_data = validated_data.pop('user_data')
-        user_serializer = UserSerializer(data=user_data)
-        user_serializer.is_valid(raise_exception=True)
-        user = user_serializer.save()
-
+        user = self.context.get('user')
+        if not user:
+            raise serializers.ValidationError("User must be provided")
         mama_mboga = MamaMboga.objects.create(user=user, **validated_data)
-
         if mama_mboga.location_latitude and mama_mboga.location_longitude:
             GeoLocation.objects.create(
                 name=mama_mboga.kiosk_name,
@@ -106,9 +80,7 @@ class MamaMbogaSerializer(serializers.ModelSerializer):
                 is_mama_mboga=True,
                 address=mama_mboga.address_description or ""
             )
-
         return mama_mboga
-
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -116,48 +88,58 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserProfileUnionSerializer(serializers.Serializer):
-    id = serializers.IntegerField(source='user.id')
-    username = serializers.CharField(source='user.username')
-    first_name = serializers.CharField(source='user.first_name')
-    last_name = serializers.CharField(source='user.last_name')
-    email = serializers.EmailField(source='user.email')
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField(read_only=True)
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
+    email = serializers.EmailField(read_only=True)
     user_type = serializers.SerializerMethodField()
-    phone_number = serializers.CharField()
-    image_url = serializers.URLField()
-    registration_date = serializers.DateTimeField()
-    is_active = serializers.BooleanField(source='user.is_active')
-    kiosk_name = serializers.CharField(required=False)  
-    
+    phone_number = serializers.CharField(default='', allow_blank=True)
+    image_url = serializers.URLField(default='', allow_blank=True)
+    registration_date = serializers.DateTimeField(default=timezone.now)
+    is_active = serializers.BooleanField(read_only=True)
+    kiosk_name = serializers.CharField(required=False, default='', allow_blank=True)
     def get_user_type(self, obj):
         if isinstance(obj, Customer):
             return 'customer'
         if isinstance(obj, MamaMboga):
-            return 'mamamboga'
-
+            return 'mama_mboga'
+        if isinstance(obj, AdminModeratorProfile):
+            return obj.role
+        if isinstance(obj, User):
+            return 'user'
+        return 'unknown'
     def to_representation(self, instance):
+        if isinstance(instance, User):
+            return {
+                'id': instance.id,
+                'username': instance.username,
+                'first_name': instance.first_name,
+                'last_name': instance.last_name,
+                'email': instance.email,
+                'user_type': self.get_user_type(instance),
+                'phone_number': '',
+                'image_url': '',
+                'registration_date': instance.date_joined,
+                'is_active': instance.is_active,
+                'kiosk_name': ''
+            }
         data = super().to_representation(instance)
-        if hasattr(instance, 'customer'):
-            customer_data = CustomerSerializer(instance.customer).data
+        if isinstance(instance, Customer):
+            customer_data = CustomerSerializer(instance).data
             data.update(customer_data)
-            dietary_prefs = getattr(instance.customer, 'dietary_preferences', None)
+            dietary_prefs = getattr(instance, 'dietary_preferences', None)
             if dietary_prefs is not None:
                 data['dietary_preferences'] = DietaryPreferenceSerializer(
                     dietary_prefs.all(), many=True
                 ).data
-        elif hasattr(instance, 'mama_mboga'):
-            mama_data = MamaMbogaSerializer(instance.mama_mboga).data
+        elif isinstance(instance, MamaMboga):
+            mama_data = MamaMbogaSerializer(instance).data
             data.update(mama_data)
-        elif hasattr(instance, 'customer'):
-            data.update({
-                'dietary_preferences': DietaryPreferenceSerializer(
-                    instance.customer.dietary_preferences.all(), 
-                    many=True
-                ).data
-            })
-
+        elif isinstance(instance, AdminModeratorProfile):
+            data.update({'role': instance.role})
         return data
-  
-
+    
 class OrdersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
@@ -165,7 +147,7 @@ class OrdersSerializer(serializers.ModelSerializer):
 
 class Order_itemsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Order_items   
+        model = Order_items
         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -192,23 +174,20 @@ class PayoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payout
         fields = '__all__'
-
+        
 class STKPushSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     account_reference = serializers.CharField(max_length=12, default="AZ12375")
     transaction_desc = serializers.CharField()
-
 class DietaryPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DietaryPreference
         fields = '__all__'
-
 class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealPlan
         fields = '__all__'
-
 class DietaryPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DietaryPreference
@@ -221,13 +200,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = '__all__'
-
 class FetchHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = FetchHistory
         fields ='__all__'
-
-
 
 # {
 #   "user_type": "mama_mboga",
