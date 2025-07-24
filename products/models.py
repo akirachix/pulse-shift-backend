@@ -23,6 +23,7 @@ class Product(models.Model):
     image_url = models.URLField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    mama_mboga = models.ForeignKey(MamaMboga, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

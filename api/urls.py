@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (DietaryPreferenceViewSet, MealPlanViewSet,RecipeViewSet,FetchHistoryViewSet,IngredientViewSet,OrdersViewSet, PaymentViewSet, PayoutViewSet, STKPushView, daraja_callback, Order_itemsViewSet, ProductViewSet, ProductCategoryViewSet, StockRecordViewSet,UserUnionList)
+from .views import (DietaryPreferenceViewSet, LoginAPI, LogoutAPI, MealPlanViewSet,RecipeViewSet,FetchHistoryViewSet,IngredientViewSet,OrdersViewSet, PaymentViewSet, PayoutViewSet, RegisterView, STKPushView, daraja_callback, Order_itemsViewSet, ProductViewSet, ProductCategoryViewSet, StockRecordViewSet,UserUnionList)
 
 router = DefaultRouter()
 router.register(r"payments", PaymentViewSet, basename='payment')
@@ -23,6 +23,10 @@ urlpatterns = [
    path('daraja/callback/', daraja_callback, name='daraja-callback'),
    path('users/', UserUnionList.as_view(), name='users'),
    path('users/<int:pk>/', UserUnionList.as_view(), name='user-detail'), 
+   path('register/', RegisterView.as_view(), name='register'),
+   path('login/', LoginAPI.as_view(), name='login'),
+   path('logout/', LogoutAPI.as_view(), name='logout'),
+
 ]
 
 
