@@ -17,15 +17,6 @@ load_dotenv()
 import dj_database_url
 
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-# load_dotenv(dotenv_path=BASE_DIR/'.env')
-# SPOONACULAR_API_KEY = os.getenv('SPOONACULAR_API_KEY')
-
-
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -52,9 +43,11 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'django_crontab',
-    # 'django_filters',
+    'django_filters',
     'locations',
     "corsheaders",
+    "django_extensions",
+
 
 
 ]
@@ -68,7 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',   
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
+    'corsheaders.middleware.CorsMiddleware', 
 ]
 
 ROOT_URLCONF = 'greensmtaani.urls'
@@ -79,7 +73,7 @@ TEMPLATES = [
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
+            'context_processors': [   
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -107,8 +101,7 @@ CRONJOBS = [
     ('0 0 1 * *', 'api.tasks.fetch_monthly_recipes_task'),
  
 ]
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -185,3 +178,11 @@ LOGGING = {
         },
     },
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'yyamu468@gmail.com'
+EMAIL_HOST_PASSWORD = 'fwbtrdaxkpjiqeic'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

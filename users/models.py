@@ -1,5 +1,5 @@
 from django.db import models
-# from django.contrib.auth import get_user_model
+
 
 
 class Customer(models.Model):
@@ -45,3 +45,16 @@ class Address(models.Model):
         return f"Address {self.address_id} for {self.customer} ({self.latitude}, {self.longitude})"
 
 
+class DashboardAdmin(models.Model):
+    admin_id = models.AutoField(primary_key=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    otp = models.CharField(max_length=4, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"

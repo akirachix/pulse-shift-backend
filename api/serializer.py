@@ -93,10 +93,6 @@ class STKPushSerializer(serializers.Serializer):
     account_reference = serializers.CharField(max_length=12, default="AZ12375")
     transaction_desc = serializers.CharField()
 
-class DietaryPreferenceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DietaryPreference
-        fields = '__all__'
 
 class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
@@ -121,6 +117,15 @@ class FetchHistorySerializer(serializers.ModelSerializer):
         model = FetchHistory
         fields ='__all__'
 
+class OTPResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class OTPResetPasswordSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=4)
+    password = serializers.CharField()        
 
 
 

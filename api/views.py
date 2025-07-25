@@ -1,54 +1,40 @@
 import random
+from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from rest_framework import status,generics
+from rest_framework import status, generics
 from rest_framework.response import Response
-from rest_framework import status
-from .sandbox import MpesaAPI
+from rest_framework import serializers
 from django.db.models import Value as V, CharField, F
 from django.shortcuts import render
-# from django_filters.rest_framework import DjangoFilterBackend
+from django.core.mail import send_mail
+import logging
 from rest_framework import viewsets
-from nutrition.models import DietaryPreference,MealPlan, FetchHistory,Recipe,Ingredient
+from .sandbox import MpesaAPI
+from nutrition.models import DietaryPreference, MealPlan, FetchHistory, Recipe, Ingredient
 from orders.models import Orders, Order_items
-from users.models import Customer, MamaMboga
+from users.models import Customer, MamaMboga, DashboardAdmin
 from products.models import Product, ProductCategory, StockRecord
 from payments.models import Payment, Payout
-import logging
+from .serializer import (
+    UserUnionSerializer, PayoutSerializer, PaymentSerializer, CustomerSerializer,
+    MamaMbogaSerializer, DietaryPreferenceSerializer, MealPlanSerializer, Order_itemsSerializer,
+    OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer,
+    RecipeSerializer, IngredientSerializer, FetchHistorySerializer, STKPushSerializer,
+    OTPResetRequestSerializer, OTPResetPasswordSerializer,AddressSerializer
+)
+
+
+
 logger = logging.getLogger(__name__)
-from .serializer import  UserUnionSerializer,PayoutSerializer,PaymentSerializer,CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer,RecipeSerializer,IngredientSerializer,FetchHistorySerializer,STKPushSerializer
-
-
-# class UserUnionList(APIView):
-#     def get(self, request, pk=None):
-#         customers = Customer.objects.annotate(
-#             user_type=V('customer', output_field=CharField()),
-#             id=F('customer_id')
-#         ).values(
-#             'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
-#             'registration_date', 'is_active', 'user_type', 'image_url'
-#         )
-#         mamambogas = MamaMboga.objects.annotate(
-#             user_type=V('mama_mboga', output_field=CharField()),
-#             id=F('mama_mboga_id')
-#         ).values(
-#             'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
-#             'registration_date', 'is_active', 'user_type', 'image_url'
-#         )
-#         union = customers.union(mamambogas)
-#         serializer = UserUnionSerializer(union, many=True)
-#         return Response(serializer.data)
-    
-
-
+otp_admin_store = {}
 
 
 class UserUnionList(APIView):
-    def get(self, request, pk=None): 
+    def get(self, request, pk=None):
         if pk:
-            
             try:
                 user = Customer.objects.get(pk=pk)
                 serializer = CustomerSerializer(user)
@@ -61,7 +47,6 @@ class UserUnionList(APIView):
                 except MamaMboga.DoesNotExist:
                     return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            # Handle list retrieval
             customers = Customer.objects.annotate(
                 user_type=V('customer', output_field=CharField()),
                 id=F('customer_id')
@@ -73,13 +58,12 @@ class UserUnionList(APIView):
                 user_type=V('mama_mboga', output_field=CharField()),
                 id=F('mama_mboga_id')
             ).values(
-                'id', 'first_name', 'last_name', 'email', 'phone_number', 'password', 
+                'id', 'first_name', 'last_name', 'email', 'phone_number', 'password',
                 'registration_date', 'is_active', 'user_type', 'image_url'
             )
             union = customers.union(mamambogas)
             serializer = UserUnionSerializer(union, many=True)
             return Response(serializer.data)
-
 
     def post(self, request):
         data = request.data
@@ -91,13 +75,11 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Unknown user_type'}, status=status.HTTP_400_BAD_REQUEST)
 
-
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     def patch(self, request, pk):
         user_type = request.data.get('user_type')
@@ -116,13 +98,11 @@ class UserUnionList(APIView):
         else:
             return Response({'error': 'Invalid user_type'}, status=status.HTTP_400_BAD_REQUEST)
 
-
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     def delete(self, request, pk):
         user_type = request.data.get('user_type')
@@ -143,39 +123,46 @@ class UserUnionList(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 class DietaryPreferenceViewSet(viewsets.ModelViewSet):
     queryset = DietaryPreference.objects.all()
     serializer_class = DietaryPreferenceSerializer
+
+
 
 class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
+
 class Order_itemsViewSet(viewsets.ModelViewSet):
     queryset = Order_items.objects.all()
-    serializer_class =Order_itemsSerializer
+    serializer_class = Order_itemsSerializer
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    serializer_class =ProductSerializer
+    serializer_class = ProductSerializer
+
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()
-    serializer_class =ProductCategorySerializer
+    serializer_class = ProductCategorySerializer
+
+
 
 class StockRecordViewSet(viewsets.ModelViewSet):
     queryset = StockRecord.objects.all()
-    serializer_class =StockRecordSerializer
+    serializer_class = StockRecordSerializer
 
 
 class PaymentViewSet(viewsets.ModelViewSet):
-      queryset = Payment.objects.all()
-      serializer_class =PaymentSerializer
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
 
 class PayoutViewSet(viewsets.ModelViewSet):
-      queryset = Payout.objects.all()
-      serializer_class =PayoutSerializer
+    queryset = Payout.objects.all()
+    serializer_class = PayoutSerializer
 
 
 class STKPushView(APIView):
@@ -190,8 +177,10 @@ class STKPushView(APIView):
                 account_reference=data['account_reference'],
                 transaction_desc=data['transaction_desc']
             )
-            return Response(response)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 def daraja_callback(request):
     print("Daraja Callback Data:", request.data)
@@ -201,16 +190,79 @@ def daraja_callback(request):
 class MealPlanViewSet(viewsets.ModelViewSet):
     queryset = MealPlan.objects.all()
     serializer_class = MealPlanSerializer
+
+
 class IngredientViewSet(viewsets.ModelViewSet):
-       queryset = Ingredient.objects.all()
-       serializer_class = IngredientSerializer
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+
+
 class RecipeViewSet(viewsets.ModelViewSet):
-       queryset = Recipe.objects.all()
-       serializer_class = RecipeSerializer
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+
+
 class FetchHistoryViewSet(viewsets.ModelViewSet):
-       queryset = FetchHistory.objects.all()
-       serializer_class = FetchHistorySerializer
+    queryset = FetchHistory.objects.all()
+    serializer_class = FetchHistorySerializer
+
+def generate_otp():
+    return str(random.randint(1000, 9999))
+
+@api_view(['POST'])
+def reset_request(request):
+    serializer = OTPResetRequestSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    email = serializer.validated_data['email'].strip().lower()
+    print(f"Reset request for email: {email}")
+
+    try:
+        user = DashboardAdmin.objects.get(email=email)
+    except DashboardAdmin.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=404)
+
+    user.otp = generate_otp()
+    user.otp_created_at = timezone.now()
+    user.save(update_fields=['otp', 'otp_created_at'])
+
+    send_mail(
+        'Password Reset OTP',
+        f'Your OTP is {user.otp}. It expires in 10 minutes.',
+        'noreply@yourdomain.com',  
+        [user.email],
+        fail_silently=False,
+    )
+    return Response({'detail': 'OTP sent to your email.'}, status=200)
 
 
+@api_view(['PUT'])
+def reset_password(request):
+    serializer = OTPResetPasswordSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    email = serializer.validated_data['email'].strip().lower()
+    otp = serializer.validated_data['otp']
+    password = serializer.validated_data['password']
 
+    print(f"Password reset attempt for: {email}")
+
+    try:
+        user = DashboardAdmin.objects.get(email=email)
+    except DashboardAdmin.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=404)
+
+    if (
+        user.otp != otp or
+        not user.otp_created_at or
+        timezone.now() > user.otp_created_at + timedelta(minutes=10)
+    ):
+        return Response({'detail': 'Invalid or expired OTP'}, status=400)
+
+    user.password = password
+    user.otp = None
+    user.otp_created_at = None
+    user.save(update_fields=['password', 'otp', 'otp_created_at'])
+    return Response({'detail': 'Password reset successful.'}, status=200)
