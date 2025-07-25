@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     # 'django_filters',
     'locations',
     "corsheaders",
-
+    'rest_framework.authtoken',
 
 ]
 
@@ -130,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -185,3 +185,32 @@ LOGGING = {
         },
     },
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'authorization',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://d3ee-41-90-172-68.ngrok-free.app", 
+    "https://greensmtaani-d6ee50db917a.herokuapp.com" 
+]
+
+CORS_ALLOW_ALL_ORIGINS = True

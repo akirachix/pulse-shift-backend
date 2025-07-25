@@ -15,6 +15,8 @@ class Orders(models.Model):
     payment_status = models.CharField(max_length=50)
     expected_pickup_time = models.DateTimeField(null=True, blank=True)
     customer_feedback = models.TextField(null=True, blank=True)
+    mama_mboga = models.ForeignKey(MamaMboga, on_delete=models.RESTRICT) 
+
     def __str__(self):
         return f"{self.customer} {self.order_id}"
 
@@ -26,7 +28,7 @@ class Order_items(models.Model):
     mama_mboga = models.ForeignKey(MamaMboga, on_delete=models.RESTRICT)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     price_per_unit_at_order = models.DecimalField(max_digits=10, decimal_places=2)
-    item_total = models.DecimalField(max_digits=10, decimal_places=2)
+    item_total = models.DecimalField(max_digits=10, decimal_places=3)
     status_at_mama_mboga = models.CharField(max_length=50)
     def __str__(self):
         return f"{self.order} {self.order_item_id}"
