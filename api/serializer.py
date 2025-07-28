@@ -25,7 +25,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_type = validated_data.pop('user_type', None)
         password = validated_data.pop('password')
-        # Create user
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email'),
@@ -180,18 +179,18 @@ class STKPushSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     account_reference = serializers.CharField(max_length=12, default="AZ12375")
     transaction_desc = serializers.CharField()
+
 class DietaryPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DietaryPreference
         fields = '__all__'
+
+
 class MealPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealPlan
         fields = '__all__'
-class DietaryPreferenceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DietaryPreference
-        fields = '__all__'
+
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
@@ -205,6 +204,17 @@ class FetchHistorySerializer(serializers.ModelSerializer):
         model = FetchHistory
         fields ='__all__'
 
+
+class OTPResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class OTPResetPasswordSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=4)
+    password = serializers.CharField()        
+
 # {
 #   "user_type": "mama_mboga",
 #   "user_data": {
@@ -216,5 +226,6 @@ class FetchHistorySerializer(serializers.ModelSerializer):
 #   },
 #   "phone_number": "0709111222"
 # }
+
 
 

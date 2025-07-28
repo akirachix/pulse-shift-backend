@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
@@ -26,6 +28,7 @@ class MamaMboga(models.Model):
     def __str__(self):
         return self.kiosk_name
 
+
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='addresses')
@@ -48,3 +51,17 @@ class AdminModeratorProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+
+
+User = get_user_model()
+
+
+class DashboardAdmin(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='dashboard_admin_profile')  # Fixed related_name here
+    is_active = models.BooleanField(default=True)
+    otp = models.CharField(max_length=4, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"

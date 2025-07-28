@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (DietaryPreferenceViewSet, LoginAPI, LogoutAPI, MealPlanViewSet,RecipeViewSet,FetchHistoryViewSet,IngredientViewSet,OrdersViewSet, PaymentViewSet, PayoutViewSet, RegisterView, STKPushView, daraja_callback, Order_itemsViewSet, ProductViewSet, ProductCategoryViewSet, StockRecordViewSet,UserUnionList)
+from .views import (DietaryPreferenceViewSet, LoginAPI, LogoutAPI, MealPlanViewSet,RecipeViewSet,FetchHistoryViewSet,IngredientViewSet,OrdersViewSet, PaymentViewSet, PayoutViewSet, RegisterView, STKPushView, daraja_callback, Order_itemsViewSet, ProductViewSet, ProductCategoryViewSet, StockRecordViewSet,UserUnionList, reset_request, reset_password)
+ 
 
 router = DefaultRouter()
 router.register(r"payments", PaymentViewSet, basename='payment')
@@ -26,7 +27,8 @@ urlpatterns = [
    path('register/', RegisterView.as_view(), name='register'),
    path('login/', LoginAPI.as_view(), name='login'),
    path('logout/', LogoutAPI.as_view(), name='logout'),
-
+   path('reset-request/', reset_request, name='reset-request'),
+   path('reset-password/', reset_password, name='reset-password'),
 ]
 
 

@@ -1,29 +1,35 @@
 import random
+from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from rest_framework import status,generics
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import status
-from .sandbox import MpesaAPI
+from rest_framework import serializers
 from django.db.models import Value as V, CharField, F
 from django.shortcuts import render
-# from django_filters.rest_framework import DjangoFilterBackend
+from django.core.mail import send_mail
+import logging
 from rest_framework import viewsets
-from nutrition.models import DietaryPreference,MealPlan, FetchHistory,Recipe,Ingredient
+from .sandbox import MpesaAPI
+from nutrition.models import DietaryPreference, MealPlan, FetchHistory, Recipe, Ingredient
 from orders.models import Orders, Order_items
-from users.models import Customer, MamaMboga
+from users.models import Customer, MamaMboga, DashboardAdmin
 from products.models import Product, ProductCategory, StockRecord
 from payments.models import Payment, Payout
-import logging
-logger = logging.getLogger(__name__)
-from .serializer import RegisterSerializer, LoginSerializer, UserProfileUnionSerializer,PayoutSerializer,PaymentSerializer,CustomerSerializer, MamaMbogaSerializer, DietaryPreferenceSerializer,MealPlanSerializer, Order_itemsSerializer, OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer,RecipeSerializer,IngredientSerializer,FetchHistorySerializer,STKPushSerializer
-
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login
+from .serializer import (
+    PayoutSerializer, PaymentSerializer, CustomerSerializer,
+    MamaMbogaSerializer, DietaryPreferenceSerializer, MealPlanSerializer, Order_itemsSerializer,
+    OrdersSerializer, ProductSerializer, ProductCategorySerializer, StockRecordSerializer,
+    RecipeSerializer, IngredientSerializer, FetchHistorySerializer, STKPushSerializer,
+    OTPResetRequestSerializer, OTPResetPasswordSerializer, AddressSerializer, RegisterSerializer, LoginSerializer, UserProfileUnionSerializer
+)
+
+logger = logging.getLogger(__name__)
 
 
 class IsOwnerOrAdmin(permissions.BasePermission):
@@ -34,23 +40,25 @@ class IsOwnerOrAdmin(permissions.BasePermission):
         role = None
         if hasattr(request.user, 'admin_mod_profile'):
             role = request.user.admin_mod_profile.role
-        
+
         if role in ['admin', 'moderator']:
             return True
-        
-        if request.user.is_staff: 
+
+        if request.user.is_staff:
             return True
 
         return hasattr(obj, 'user') and obj.user == request.user
-    
+
 
 class IsCustomer(permissions.BasePermission):
     def has_permission(self, request, view):
         return hasattr(request.user, 'customer')
 
+
 class IsMamaMboga(permissions.BasePermission):
     def has_permission(self, request, view):
         return hasattr(request.user, 'mama_mboga')
+
 
 class IsOrderCustomerOrVendor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -70,6 +78,7 @@ class IsOrderCustomerOrVendor(permissions.BasePermission):
             return True
         return False
 
+
 class IsProfileOwnerOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
@@ -78,14 +87,13 @@ class IsProfileOwnerOrAdmin(permissions.BasePermission):
         role = None
         if hasattr(request.user, 'admin_mod_profile'):
             role = request.user.admin_mod_profile.role
-        
+
         if role in ['admin', 'moderator']:
             return True
 
         if request.user.is_staff:
             return True
         return obj.user == request.user
-
 
 
 logger = logging.getLogger(__name__)
@@ -153,8 +161,8 @@ class RegisterView(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
-
 logger = logging.getLogger(__name__)
+
 
 class LoginAPI(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -195,8 +203,6 @@ class LoginAPI(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
 
 
-
-
 class LogoutAPI(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -205,6 +211,7 @@ class LogoutAPI(APIView):
         from django.contrib.auth import logout
         logout(request)
         return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated, IsProfileOwnerOrAdmin]
@@ -218,25 +225,25 @@ class ProfileView(APIView):
         elif hasattr(user, 'admin'):
             profile = user.admin
         else:
-            return Response(...)
+            return Response({ "detail": "Profile not found." }, status=status.HTTP_404_NOT_FOUND)
             
         serializer = UserProfileUnionSerializer(profile)
         return Response(serializer.data)
 
 
+otp_admin_store = {}
+
 
 class UserUnionList(APIView):
-    permission_classes = [IsAdminUser] 
+    permission_classes = [IsAdminUser]
 
     def get(self, request, pk=None):
-
         if pk is None:
             customers = Customer.objects.all()
             mamambogas = MamaMboga.objects.all()
             union = list(customers) + list(mamambogas)
             serializer = UserProfileUnionSerializer(union, many=True)
             return Response(serializer.data)
-        
         else:
             try:
                 user_instance = Customer.objects.get(pk=pk)
@@ -245,20 +252,14 @@ class UserUnionList(APIView):
                     user_instance = MamaMboga.objects.get(pk=pk)
                 except MamaMboga.DoesNotExist:
                     return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
             serializer = UserProfileUnionSerializer(user_instance)
             return Response(serializer.data)
-        
-    def post(self, request):
 
-        return Response({'error': 'Use /api/register/ for user registration'}, 
+    def post(self, request):
+        return Response({'error': 'Use /api/register/ for user registration'},
                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-
-    
-
     def patch(self, request, pk):
-        permission_classes = [IsAuthenticated, IsProfileOwnerOrAdmin]
 
         user_type = request.data.get('user_type')
         instance = None
@@ -280,8 +281,7 @@ class UserUnionList(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        permission_classes = [IsAuthenticated, IsAdminUser]
-
+       
         user_type = request.data.get('user_type')
         if user_type == 'customer':
             instance = Customer.objects.filter(pk=pk).first()
@@ -295,7 +295,7 @@ class UserUnionList(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def to_representation(self, instance):
-
+        from django.contrib.auth.models import User
         if hasattr(instance, 'user') and isinstance(instance.user, User):
             user = instance.user
             data = {
@@ -312,7 +312,6 @@ class UserUnionList(APIView):
                 'kiosk_name': getattr(instance, 'kiosk_name', ''),
             }
             return data
-
         data = super().to_representation(instance)
         if hasattr(instance, 'customer'):
             customer_data = CustomerSerializer(instance.customer).data
@@ -327,10 +326,12 @@ class UserUnionList(APIView):
             data.update(mama_data)
         return data
 
+
 class DietaryPreferenceViewSet(viewsets.ModelViewSet):
     queryset = DietaryPreference.objects.all()
     serializer_class = DietaryPreferenceSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Orders.objects.all()
@@ -350,12 +351,13 @@ class OrdersViewSet(viewsets.ModelViewSet):
 
 class Order_itemsViewSet(viewsets.ModelViewSet):
     queryset = Order_items.objects.all()
-    serializer_class =Order_itemsSerializer
-    permission_classes = [IsAuthenticated, IsOrderCustomerOrVendor] 
+    serializer_class = Order_itemsSerializer
+    permission_classes = [IsAuthenticated, IsOrderCustomerOrVendor]
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    serializer_class =ProductSerializer
+    serializer_class = ProductSerializer
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
@@ -372,24 +374,26 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()
-    serializer_class =ProductCategorySerializer
+    serializer_class = ProductCategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 class StockRecordViewSet(viewsets.ModelViewSet):
     queryset = StockRecord.objects.all()
-    serializer_class =StockRecordSerializer
+    serializer_class = StockRecordSerializer
     permission_classes = [IsAuthenticated, IsMamaMboga]
 
 
 class PaymentViewSet(viewsets.ModelViewSet):
-      queryset = Payment.objects.all()
-      serializer_class =PaymentSerializer
-      permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+
 
 class PayoutViewSet(viewsets.ModelViewSet):
-      queryset = Payout.objects.all()
-      serializer_class =PayoutSerializer
-      permission_classes = [IsAuthenticated, IsAdminUser] 
+    queryset = Payout.objects.all()
+    serializer_class = PayoutSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
 
 class STKPushView(APIView):
@@ -406,12 +410,15 @@ class STKPushView(APIView):
                 account_reference=data['account_reference'],
                 transaction_desc=data['transaction_desc']
             )
-            return Response(response)
+       
+            return Response(response, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def daraja_callback(request):
-    permission_classes = [AllowAny]
     print("Daraja Callback Data:", request.data)
     return Response({"ResultCode": 0, "ResultDesc": "Accepted"})
 
@@ -421,16 +428,91 @@ class MealPlanViewSet(viewsets.ModelViewSet):
     serializer_class = MealPlanSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+
 class IngredientViewSet(viewsets.ModelViewSet):
-       queryset = Ingredient.objects.all()
-       serializer_class = IngredientSerializer
-       permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
-       queryset = Recipe.objects.all()
-       serializer_class = RecipeSerializer
-       permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
 class FetchHistoryViewSet(viewsets.ModelViewSet):
-       queryset = FetchHistory.objects.all()
-       serializer_class = FetchHistorySerializer
-       permission_classes = [IsAdminUser]
+    queryset = FetchHistory.objects.all()
+    serializer_class = FetchHistorySerializer
+    permission_classes = [IsAdminUser]
+
+
+def generate_otp():
+    return str(random.randint(1000, 9999))
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_request(request):
+    serializer = OTPResetRequestSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    email = serializer.validated_data['email'].strip().lower()
+    print(f"Reset request for email: {email}")
+
+    try:
+        user = DashboardAdmin.objects.get(user__email=email)  
+    except DashboardAdmin.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=404)
+
+    user.otp = generate_otp()
+    user.otp_created_at = timezone.now()
+    user.save(update_fields=['otp', 'otp_created_at'])
+
+    send_mail(
+        'Password Reset OTP',
+        f'Your OTP is {user.otp}. It expires in 10 minutes.',
+        'noreply@yourdomain.com',
+        [user.user.email],  
+        fail_silently=False,
+    )
+    return Response({'detail': 'OTP sent to your email.'}, status=200)
+
+
+@api_view(['PUT'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    serializer = OTPResetPasswordSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    email = serializer.validated_data['email'].strip().lower()
+    otp = serializer.validated_data['otp']
+    password = serializer.validated_data['password']
+
+    print(f"Password reset attempt for: {email}")
+
+    try:
+        user = DashboardAdmin.objects.get(user__email=email)  
+    except DashboardAdmin.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=404)
+
+    if (
+        user.otp != otp or
+        not user.otp_created_at or
+        timezone.now() > user.otp_created_at + timedelta(minutes=10)
+    ):
+        return Response({'detail': 'Invalid or expired OTP'}, status=400)
+
+    user.user.set_password(password)  
+    user.user.save(update_fields=['password'])
+
+    user.otp = None
+    user.otp_created_at = None
+    user.save(update_fields=['otp', 'otp_created_at'])
+
+    return Response({'detail': 'Password reset successful.'}, status=200)
+
+
+
