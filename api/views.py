@@ -14,7 +14,7 @@ from rest_framework import viewsets
 from .sandbox import MpesaAPI
 from nutrition.models import DietaryPreference, MealPlan, FetchHistory, Recipe, Ingredient
 from orders.models import Orders, Order_items
-from users.models import Customer, MamaMboga, DashboardAdmin
+from users.models import Customer, MamaMboga, AdminModeratorProfile
 from products.models import Product, ProductCategory, StockRecord
 from payments.models import Payment, Payout
 from rest_framework import status, generics, permissions
@@ -28,6 +28,7 @@ from .serializer import (
     RecipeSerializer, IngredientSerializer, FetchHistorySerializer, STKPushSerializer,
     OTPResetRequestSerializer, OTPResetPasswordSerializer, AddressSerializer, RegisterSerializer, LoginSerializer, UserProfileUnionSerializer
 )
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -96,8 +97,6 @@ class IsProfileOwnerOrAdmin(permissions.BasePermission):
         return obj.user == request.user
 
 
-logger = logging.getLogger(__name__)
-
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -106,19 +105,21 @@ class RegisterView(APIView):
         data = request.data
         user_type = data.get('user_type')
         logger.info(f"Register request data: {data}")
-
+        
         if user_type not in ['customer', 'mama_mboga', 'admin', 'moderator']:
             return Response(
                 {'error': 'Invalid user_type. Must be customer, mama_mboga, admin, or moderator'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+            
         user_data = data.get('user_data', {})
+        user_data['user_type'] = user_type
+        
         serializer = RegisterSerializer(data=user_data)
         if not serializer.is_valid():
             logger.error(f"RegisterSerializer errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            
         user = serializer.save()
         logger.info(f"User created: {user.username}")
 
@@ -457,27 +458,56 @@ def reset_request(request):
     serializer = OTPResetRequestSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
     email = serializer.validated_data['email'].strip().lower()
-    print(f"Reset request for email: {email}")
+    logger.info(f"Reset request for email: {email}")
+
+    user = None
 
     try:
-        user = DashboardAdmin.objects.get(user__email=email)  
-    except DashboardAdmin.DoesNotExist:
-        return Response({'detail': 'User not found'}, status=404)
+        admin_profile = AdminModeratorProfile.objects.get(user__email=email)
+        user = admin_profile.user
+    except AdminModeratorProfile.DoesNotExist:
+        try:
+            customer_profile = Customer.objects.get(user__email=email)
+            user = customer_profile.user
+        except Customer.DoesNotExist:
+            try:
+                mama_mboga_profile = MamaMboga.objects.get(user__email=email)
+                user = mama_mboga_profile.user
+            except MamaMboga.DoesNotExist:
+                return Response({'detail': 'User not found'}, status=404)
 
-    user.otp = generate_otp()
-    user.otp_created_at = timezone.now()
-    user.save(update_fields=['otp', 'otp_created_at'])
-
-    send_mail(
-        'Password Reset OTP',
-        f'Your OTP is {user.otp}. It expires in 10 minutes.',
-        'noreply@yourdomain.com',
-        [user.user.email],  
-        fail_silently=False,
-    )
-    return Response({'detail': 'OTP sent to your email.'}, status=200)
+    try: 
+        if hasattr(user, 'admin_mod_profile'):
+            profile = user.admin_mod_profile
+            profile_type = 'admin/moderator'
+        elif hasattr(user, 'customer'):
+            profile = user.customer
+            profile_type = 'customer'
+        elif hasattr(user, 'mama_mboga'):
+            profile = user.mama_mboga
+            profile_type = 'mama_mboga'
+        else:
+            logger.error(f"User {user.username} has no profile associated")
+            return Response({'detail': 'User profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+        profile.otp = generate_otp()
+        profile.otp_created_at = timezone.now()
+        profile.save(update_fields=['otp', 'otp_created_at'])
+        
+        send_mail(
+            'Password Reset OTP',
+            f'Your OTP is {profile.otp}. It expires in 10 minutes.',
+            'noreply@yourdomain.com',
+            [user.email],
+            fail_silently=False,
+        )
+        
+        return Response({'detail': 'OTP sent to your email.'}, status=200)
+        
+    except Exception as e:
+        return Response({'detail': f'Error: {str(e)}'}, status=500)
 
 
 @api_view(['PUT'])
@@ -493,26 +523,51 @@ def reset_password(request):
 
     print(f"Password reset attempt for: {email}")
 
+    user = None
+
     try:
-        user = DashboardAdmin.objects.get(user__email=email)  
-    except DashboardAdmin.DoesNotExist:
-        return Response({'detail': 'User not found'}, status=404)
-
+        admin_profile = AdminModeratorProfile.objects.get(user__email=email)
+        user = admin_profile.user
+    except AdminModeratorProfile.DoesNotExist:
+        try:
+            customer_profile = Customer.objects.get(user__email=email)
+            user = customer_profile.user
+        except Customer.DoesNotExist:
+            try:
+                mama_mboga_profile = MamaMboga.objects.get(user__email=email)
+                user = mama_mboga_profile.user
+            except MamaMboga.DoesNotExist:
+                return Response({'detail': 'User not found'}, status=404)
+            
+    profile = None
+    if hasattr(user, 'admin_mod_profile'):
+        profile = user.admin_mod_profile
+    elif hasattr(user, 'customer'):
+        profile = user.customer
+    elif hasattr(user, 'mama_mboga'):
+        profile = user.mama_mboga
+    else:
+        return Response({'detail': 'User profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
     if (
-        user.otp != otp or
-        not user.otp_created_at or
-        timezone.now() > user.otp_created_at + timedelta(minutes=10)
+        not profile.otp or
+        profile.otp != otp or
+        not profile.otp_created_at or
+        timezone.now() > profile.otp_created_at + timedelta(minutes=10)
     ):
-        return Response({'detail': 'Invalid or expired OTP'}, status=400)
-
-    user.user.set_password(password)  
-    user.user.save(update_fields=['password'])
-
-    user.otp = None
-    user.otp_created_at = None
-    user.save(update_fields=['otp', 'otp_created_at'])
-
-    return Response({'detail': 'Password reset successful.'}, status=200)
-
+        return Response({'detail': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user.set_password(password)
+        user.save(update_fields=['password'])
+        
+        profile.otp = None
+        profile.otp_created_at = None
+        profile.save(update_fields=['otp', 'otp_created_at'])
+        
+        return Response({'detail': 'Password reset successful.'}, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        return Response({'detail': f'Error resetting password: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

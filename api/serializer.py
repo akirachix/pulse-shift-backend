@@ -227,5 +227,16 @@ class OTPResetPasswordSerializer(serializers.Serializer):
 #   "phone_number": "0709111222"
 # }
 
+# {
+#   "user_type": "admin",
+#   "user_data": {
+#     "username": "mercylin-ws",
+#     "password": "changeme789",
+#     "email": "muthonimercylin@gmail.com",
+#     "first_name": "Mercylin",
+#     "last_name": "Muthoni"
+#   },
+#   "phone_number": "+254713616003"
+# }
 
 
