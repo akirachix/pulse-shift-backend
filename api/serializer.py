@@ -215,28 +215,5 @@ class OTPResetPasswordSerializer(serializers.Serializer):
     otp = serializers.CharField(max_length=4)
     password = serializers.CharField()        
 
-# {
-#   "user_type": "mama_mboga",
-#   "user_data": {
-#     "username": "sammwangi",
-#     "password": "changeme789",
-#     "email": "samumwangi@example.com",
-#     "first_name": "Samantha",
-#     "last_name": "Mwangi"
-#   },
-#   "phone_number": "0709111222"
-# }
-
-# {
-#   "user_type": "admin",
-#   "user_data": {
-#     "username": "mercylin-ws",
-#     "password": "changeme789",
-#     "email": "muthonimercylin@gmail.com",
-#     "first_name": "Mercylin",
-#     "last_name": "Muthoni"
-#   },
-#   "phone_number": "+254713616003"
-# }
 
 
