@@ -9,6 +9,9 @@ class Customer(models.Model):
     image_url = models.URLField(null=True, blank=True)
     registration_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    otp = models.CharField(max_length=4, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
@@ -24,6 +27,9 @@ class MamaMboga(models.Model):
     address_description = models.TextField(null=True, blank=True)
     registration_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    otp = models.CharField(max_length=4, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.kiosk_name
@@ -48,20 +54,10 @@ class AdminModeratorProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_mod_profile')
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.role}"
-
-
-User = get_user_model()
-
-
-class DashboardAdmin(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='dashboard_admin_profile')  # Fixed related_name here
-    is_active = models.BooleanField(default=True)
     otp = models.CharField(max_length=4, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return f"{self.user.username} - {self.role}"
+
