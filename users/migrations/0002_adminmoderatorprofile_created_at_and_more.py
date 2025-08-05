@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='adminmoderatorprofile',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=1),
+            field=models.DateTimeField(auto_now_add=True),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customer',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=1),
+            field=models.DateTimeField(auto_now_add=True),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -40,12 +40,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customer',
             name='otp_created_at',
-            field=models.DateTimeField(blank=True, null=True),
+            field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.AddField(
             model_name='mamamboga',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=1),
+            field=models.DateTimeField(auto_now_add=True),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mamamboga',
             name='otp_created_at',
-            field=models.DateTimeField(blank=True, null=True),
+            field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.DeleteModel(
             name='DashboardAdmin',
