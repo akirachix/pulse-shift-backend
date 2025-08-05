@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
 
 
 class Customer(models.Model):
@@ -12,6 +11,7 @@ class Customer(models.Model):
     otp = models.CharField(max_length=4, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
@@ -30,6 +30,7 @@ class MamaMboga(models.Model):
     otp = models.CharField(max_length=4, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.kiosk_name
@@ -57,7 +58,7 @@ class AdminModeratorProfile(models.Model):
     otp = models.CharField(max_length=4, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
-
